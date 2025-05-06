@@ -1,0 +1,10 @@
+[postgresql]
+url=your_url_here_if_you_so_choose
+host=probably_local_host:port_number
+database=database_name
+user=username
+password=password
+
+[spark]
+master_url=master_url
+jdbc_jars=path_to_jdbc_jars_on_your_machine

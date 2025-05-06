@@ -1,0 +1,7 @@
+venv/*
+DataProcessing/Data/*
+
+
+__pycache__/
+.idea/
+*.ini
