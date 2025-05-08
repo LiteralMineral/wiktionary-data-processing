@@ -1,5 +1,5 @@
 venv/*
-DataProcessing/Data/*
+DataProcessing/Data/
 
 
 __pycache__/

@@ -8,3 +8,7 @@ password=password
 [spark]
 master_url=master_url
 jdbc_jars=path_to_jdbc_jars_on_your_machine
+
+[directory]
+data_proc_dir=DataProcessing/Data
+end_data_dir=EndProductData

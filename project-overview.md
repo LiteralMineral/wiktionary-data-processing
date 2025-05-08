@@ -10,7 +10,7 @@ The current status is as follows:
   * Download the target dataset ............. \[satisfactory\]
   * Record basic information for each entry (information that is not nested) \[satisfactory\]
   * Process inflection data: \[in progress\]
-    * Analyze and save all the tags associated with each datasets' parts of speech. \[in progress\]
+    * Analyze and save all the tags associated with each datasets' parts of speech. \[satisfactory\]
     * Prompt user to identify categories of inflectional tags and sort them. Save in a file for later use \[not yet started\]
     * Using file identifying inflectional tags for each part of speech, identify inflectional forms for each word entry. \[in progress\] <br/> (I have code from a previous project that successfully did this. I need to adapt it for this project.)
   * Process dictionary data: \[not yet started\]
@@ -21,12 +21,12 @@ The current status is as follows:
 
 To set up your own fork of this...:
 * Copy the config.ini.template file and fill in the necessary information to connect to your server.
-* 
+* ...
 
 The different stages of the data processing:
 * download and assign unique ids for each dataset
 * analyze the tags associated with each part of speech
-* inflectional procssing:
+* inflectional processing:
   * edit the programmed associations
   * using those programmed associations, create combo-tags and pull the inflections out.
 * Storing the results of the different data processing stages in their own files to be transferred to the sql database...
