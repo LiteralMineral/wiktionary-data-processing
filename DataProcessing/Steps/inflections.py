@@ -1,6 +1,8 @@
 # other stuff
 import array
 import string
+import types
+import typing
 from functools import reduce
 import psycopg2
 from configparser import ConfigParser
@@ -18,30 +20,78 @@ from pyspark.sql.functions import lit
 # from pyspark.sql.connect.functions import lit
 from pyspark.sql.types import *
 
+import settings
+from DataProcessing.Steps import utils
+from DataProcessing.Steps.utils import load_dataset
+
 
 # given: dataframe of inflection information
 # returns: a set of tags associated with each part of speech.
-def analyze_inflection_tags(data: DataFrame):
+# TODO: make it so this function
+def collect_inflection_tags(data: DataFrame, group: str = 'lang', explode_tags = False):
+
     # if (spark != None):
     #     spark.read.parquet(f"{data}")
     # explode the entries
-    exploded = data.withColumn('form_tags', funcs.explode('forms.tags')) \
+    exploded = data.withColumn('form_tags', funcs.explode_outer('forms.tags')) \
         .select('lang', 'pos', funcs.explode('form_tags').alias('form_tags'))
     # exploded.explain()
+
+    # exploded.show()
 
     # get the union of the arrays in each column.
     # get the dataframe with the columns 'language', 'pos', and 'tags'.
     # get the dataframe to have columns that are the parts of speech.
-    grouped_by = exploded.groupBy('lang') \
-        .pivot('pos') \
-        .agg(funcs.collect_set(exploded['form_tags']))
+    grouped_by = exploded.groupBy(group, 'pos') \
+        .agg(funcs.collect_set(exploded['form_tags']).alias('form_tags'))\
+        .withColumn('form_tags', funcs.explode_outer('form_tags'))\
+        .distinct()
+        # .pivot('pos') \
+    # grouped_by.show()
+    # print([item[0] for item in grouped_by.dtypes if item[1].startswith("array")])
+    # print(grouped_by.columns)
     # somehow turn it into a dictionary?? dunno... or just return the dataframe
     return grouped_by
 
+def analyze_lang_forms(lang: str, spark_read_func) -> DataFrame:
+    data = load_dataset('lang', 'has_id_column', spark_read_func)
+    data = collect_inflection_tags(data, 'lang')
+    return data
 
-def sort_inflection_tags(data: DataFrame):
+def extract_word_forms(lang: str, spark_read_func) -> DataFrame:
+    data = load_dataset(lang, 'has_id_column', spark_read_func)
+    data = data.select('entry_id', 'word', 'pos', 'forms' )
+    data = utils.apply_to_columns(data,  # explode the things that need exploding
+                                       [item[0] for item in data.dtypes
+                                        if item[1].startswith("array")],
+                                       funcs.explode_outer)
+    flat_schema = utils.flatten_schema(data.schema)
+    flat_data = data.select(flat_schema)
+    # print([item[0] for item in flat_data.dtypes
+    #                                if item[1].startswith("array")])
+    # flat_data = utils.apply_to_columns(flat_data,         # explode the things that need exploding
+    #                               [item[0] for item in flat_data.dtypes
+    #                                if item[1].startswith("array")],
+    #                               funcs.explode_outer)
 
-    pass
+    # flat_data.show()
+    return flat_data
+
+# takes in the dataframe of inflectional information to be sorted and a
+# dictionary defining which tags fall under which word properties
+# expects the dataframe to have columns entry_id, word, forms, etc.
+# returns the dataframe with the tags exploded
+def extract_inflection_tags(data: DataFrame):
+    # explode the forms tags
+    df = data.withColumn("exploded_forms",
+                         funcs.explode_outer('forms'))\
+        .withColumn("form_tags",
+                    funcs.explode_outer("exploded_forms.tags"))\
+        # .withColumn("word_forms.")
+
+def sort_inflection_tags(data: DataFrame, category_tags: typing.Dict):
+    return utils.sort_tags_column(data, 'inflection_tags', category_tags)
+
 
 
 def get_definition_entries(self, dataframe, separator="\n\n"):

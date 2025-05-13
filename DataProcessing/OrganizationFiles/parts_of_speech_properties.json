@@ -1,0 +1,190 @@
+{
+  "conj": [
+    "usage_notes",
+    "remove"
+  ],
+  "num": [
+    "gender",
+    "number",
+    "gender",
+    "case",
+    "animacy",
+    "usage_notes",
+    "remove"
+  ],
+  "verb": [
+    "number",
+    "subject",
+    "gender",
+    "aspect",
+    "tense",
+    "participle",
+    "adverbial",
+    "shortform",
+    "active",
+    "usage_notes",
+    "remove"
+  ],
+  "suffix": [
+    "number",
+    "subject",
+    "gender",
+    "aspect",
+    "tense",
+    "participle",
+    "adverbial",
+    "shortform",
+    "active",
+    "case",
+    "animacy",
+    "degree",
+    "usage_notes",
+    "remove"
+  ],
+  "combining_form": [
+    "number",
+    "subject",
+    "gender",
+    "aspect",
+    "tense",
+    "participle",
+    "adverbial",
+    "shortform",
+    "active",
+    "usage_notes",
+    "remove"
+  ],
+  "det": [
+    "number",
+    "subject",
+    "gender",
+    "aspect",
+    "tense",
+    "participle",
+    "adverbial",
+    "shortform",
+    "active",
+    "case",
+    "animacy",
+    "degree",
+    "usage_notes",
+    "remove"
+  ],
+  "infix": [
+    "usage_notes",
+    "remove"
+  ],
+  "name": [
+    "number",
+    "gender",
+    "shortform",
+    "case",
+    "animacy",
+    "usage_notes",
+    "remove"
+  ],
+  "proverb": [
+    "usage_notes",
+    "remove"
+  ],
+  "noun": [
+    "number",
+    "shortform",
+    "case",
+    "animacy"
+  ],
+  "symbol": [
+    "usage_notes",
+    "remove"
+  ],
+  "phrase": [
+    "number",
+    "subject",
+    "gender",
+    "shortform",
+    "case",
+    "animacy",
+    "usage_notes",
+    "remove"
+  ],
+  "adv": [
+    "number",
+    "gender",
+    "participle",
+    "adverbial",
+    "shortform",
+    "case",
+    "animacy",
+    "degree",
+    "usage_notes",
+    "remove"
+  ],
+  "prep_phrase": [
+    "usage_notes",
+    "remove"
+  ],
+  "adj": [
+    "number",
+    "subject",
+    "gender",
+    "aspect",
+    "tense",
+    "participle",
+    "adverbial",
+    "shortform",
+    "active",
+    "case",
+    "animacy",
+    "degree",
+    "usage_notes",
+    "remove"
+  ],
+  "particle": [
+    "usage_notes",
+    "remove"
+  ],
+  "intj": [
+    "number",
+    "case",
+    "usage_notes",
+    "remove"
+  ],
+  "punct": [
+    "usage_notes",
+    "remove"
+  ],
+  "postp": [
+    "usage_notes",
+    "remove"
+  ],
+  "interfix": [
+    "usage_notes",
+    "remove"
+  ],
+  "character": [
+    "usage_notes",
+    "remove"
+  ],
+  "pron": [
+    "number",
+    "subject",
+    "gender",
+    "shortform",
+    "case",
+    "animacy",
+    "usage_notes",
+    "remove"
+  ],
+  "ambiposition": [
+    "usage_notes",
+    "remove"
+  ],
+  "prefix": [
+    "usage_notes",
+    "remove"
+  ],
+  "prep": [
+    "usage_notes",
+    "remove"
+  ]
+}

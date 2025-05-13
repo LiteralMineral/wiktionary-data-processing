@@ -1,0 +1,137 @@
+{
+  "number": [
+    "singular",
+    "plural",
+    "collective",
+    "dual"
+  ],
+  "subject": [
+    "first-person",
+    "second-person",
+    "third-person"
+  ],
+  "gender": [
+    "masculine",
+    "feminine",
+    "neuter"
+  ],
+  "aspect": [
+    "perfective",
+    "imperfective"
+  ],
+  "tense": [
+    "past",
+    "present",
+    "future",
+    "imperative"
+  ],
+  "participle": [
+    "participle"
+  ],
+  "adverbial": [
+    "adverbial"
+  ],
+  "shortform": [
+    "short-form"
+  ],
+  "active": [
+    "active",
+    "passive"
+  ],
+  "case": [
+    "nominative",
+    "genitive",
+    "dative",
+    "accusative",
+    "instrumental",
+    "prepositional"
+  ],
+  "animacy": [
+    "animate",
+    "inanimate"
+  ],
+  "degree": [
+    "comparative",
+    "superlative"
+  ],
+  "different_forms" : [
+    "adjective",
+    "diminutive",
+    "relational"
+  ],
+  "regularity" : [
+    "irregular"
+  ],
+  "usage_notes" : [
+    "rare",
+    "literally",
+    "dated",
+    "obsolete",
+    "archaic",
+    "alternative",
+    "nonstandard",
+    "Moscow",
+    "Portugal",
+    "colloquial"
+  ],
+  "remove": [
+    "canonical",
+    "romanization",
+    "table-tags",
+    "inflection-template",
+    "error-unknown-tag",
+    "error-unrecognized-form"
+  ],
+  "morphology": [
+    "class"
+  ],
+  "script": [
+    "hanja",
+    "hangeul",
+    "alternative",
+    "romanization",
+    "hiragana",
+    "katakana"
+    
+
+
+
+  ],
+  
+  "yet-to-sort": [
+    "oppositive",
+    "elative",
+    "instructive",
+    "illative",
+    "nominative",
+    "prolative",
+    "singular",
+    "multiplicative",
+    "sublative",
+    "causative",
+    "possessive",
+    "comitative",
+    "plural",
+    "partitive",
+    "delative",
+    "abessive",
+
+    "allative",
+
+    "adessive",
+    "inessive",
+    "essive",
+    "ablative",
+    "lative",
+    "accusative",
+    "translative",
+    "temporal",
+    "distributive",
+    "inflection-template",
+    "situative",
+    "superessive",
+    "alternative"
+  ]
+}
+
+

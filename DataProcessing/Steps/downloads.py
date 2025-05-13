@@ -36,7 +36,7 @@ def collect_file(lang: string):
 
     response = requests.get(url)
     if response.status_code == 200:
-        with open(f"{settings.dir_info['data_proc']}/{lang}/{lang}_kaikki_data.jsonl", 'wb') as file:
+        with open(f"{settings.dir_info['data_proc']}/json_files/{lang}_kaikki_data.jsonl", 'wb') as file:
             file.write(response.content)
     else:
         print("could not get file")
@@ -44,7 +44,7 @@ def collect_file(lang: string):
 
 
 def download(lang: string):
-    filepath=f"{settings.dir_info['data_proc']}/{lang}/{lang}_kaikki_data.jsonl"
+    filepath=f"{settings.dir_info['data_proc']}/json_files/{lang}_kaikki_data.jsonl"
     if os.path.exists(filepath):
         print(f"{filepath} exists already, not redownloading.")
     else:
@@ -56,9 +56,9 @@ def download(lang: string):
 # This will ALWAYS be done to the original jsonl data.
 # returns df in case it's wanted
 def assign_ids(spark: SparkSession, lang: string):
-    df = spark.read.json(f"{settings.dir_info['data_proc']}/{lang}/{lang}_kaikki_data.jsonl")
+    df = spark.read.json(f"{settings.dir_info['data_proc']}/json_files/{lang}_kaikki_data.jsonl")
     df = df.withColumn("entry_id", funcs.monotonically_increasing_id())
-    df.write.mode('overwrite').parquet(f"{settings.dir_info['data_proc']}/{lang}/has_id_column")
+    df.write.mode('overwrite').parquet(f"{settings.dir_info['data_proc']}/has_id_column/{lang}")
     return df
 
 
