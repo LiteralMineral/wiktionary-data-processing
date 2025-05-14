@@ -1,3 +1,8 @@
+import configparser
+import os
+
+conf = configparser.ConfigParser()
+
 """
 Django settings for QuiktionaryWordRef project.
 
@@ -10,17 +15,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
+
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+#loading information for the database....
+CONFIG_FILE = Path(BASE_DIR.parent, Path('config.ini'))
+conf.read(CONFIG_FILE)
+postgres = conf["POSTGRESQL"]
+
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-lr*of=0(z+ed(^0ds07_81ltm2syewsxkn4l5ey1-pul+73=va"
+SECRET_KEY = "django-insecure-5qfsts2g&+5h5h()n5qb-40m_ilduprq5ma%%)8*s1_5z4$&-6"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,7 +52,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "QuiktionaryWordRefApp"
+    # main_app stuff
+    # "main_app",
+    "main_app.apps.MainAppConfig"
 ]
 
 MIDDLEWARE = [
@@ -74,10 +91,28 @@ WSGI_APPLICATION = "QuiktionaryWordRef.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
+    # "default": {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": BASE_DIR / "db.sqlite3",
+    # },
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "WiktionaryWordData",
+        "USER": f"{postgres['USER']}",
+        "PASSWORD":  f"{postgres['PASSWORD']}",
+        "HOST":  f"{postgres['HOST']}",
+        "PORT":  f"{postgres['PORT']}"
+    },
+    # "word_data": {
+    #     "ENGINE":   "django.db.backends.postgresql_psycopg2",
+    #     "NAME":     "WiktionaryWordData",
+    #     "OPTIONS": f"{}",
+    #     "USER":     f"{postgres['USER']}",
+    #     "PASSWORD": f"{postgres['PASSWORD']}",
+    #     "HOST":     f"{postgres['HOST']}",
+    #     "PORT":     f"{postgres['PORT']}"
+    # }
+
 }
 
 

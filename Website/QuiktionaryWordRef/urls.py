@@ -17,13 +17,8 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-import QuiktionaryWordRefApp.views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("QuiktionaryWordRefApp/",
-         include(".urls"))
-
-
-    # path("", include("QuiktionaryWordRef.urls"))
+    path("main_app/", include("main_app.urls"))
 ]

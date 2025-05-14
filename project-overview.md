@@ -27,7 +27,8 @@ The current status is as follows:
 To set up your own fork of this...:
 * Set up a server for yourself
 * Copy the config.ini.template file and fill in the necessary information to connect to your server.
-* 
+
+
 
 The different stages of the data processing:
 * download and assign unique ids for each dataset
