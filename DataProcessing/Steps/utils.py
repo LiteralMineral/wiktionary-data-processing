@@ -147,7 +147,8 @@ def write_to_single_csv(data: DataFrame, lang, filename):
                     if reader.line_num > 1:
                         print(row)
                         writer.writerow(row)
-
+    # delete tmp_output_dir
+    shutil.rmtree(tmp_output_dir)
     pass
 
 

@@ -1,7 +1,14 @@
-venv/*
+.venv
+venv
 DataProcessing/Data/
 
 
 __pycache__/
 .idea/
 *.ini
+
+
+
+#package.json
+
+node_modules/

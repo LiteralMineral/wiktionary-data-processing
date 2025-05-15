@@ -23,6 +23,10 @@ The current status is as follows:
     * ...
   * ...
   * More procedures to be planned.
+* Building Backend:
+  * Using: python, pyspark, django
+* Building Frontend:
+  * html, JavaScript, React
 
 To set up your own fork of this...:
 * Set up a server for yourself
