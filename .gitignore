@@ -5,3 +5,6 @@ DataProcessing/Data/
 __pycache__/
 .idea/
 *.ini
+
+
+node_modules/
