@@ -105,12 +105,35 @@ def save_datasets(tables, filename: str):
 
 
 #
-def write_to_single_csv(data: DataFrame, lang, filename):
+def merge_files(tmp_output_dir, file_name, file_extension, has_header=False):
+
+    files = glob.glob(tmp_output_dir + "/*" + file_extension)
+    output_file_name = f"{tmp_output_dir}/../../{file_name}.{file_extension}"
+
+    with open(output_file_name, "w", newline="", encoding="utf-8") as outfile:
+
+        with open(files[0], "r", newline="", encoding="utf-8") as input_file:
+            for row in input_file.readlines():
+                outfile.write(row)
+
+        for source in files[1:]:
+            # print(source)
+            with open(source, "r", newline="", encoding="utf-8") as input_file:
+                src = input_file.readlines()
+                lines = src[1:] if has_header else src
+                for row in lines:
+                    outfile.write(row)
+
+    # delete tmp_output_dir
+    shutil.rmtree(tmp_output_dir)
+
+
+
+
+def write_to_single_csv(data: DataFrame, lang, foldername):
     spark = data.sparkSession
-    tmp_output_dir = f"{settings.dir_info['data_proc']}/{filename}/{lang}/my_temp"
-    output_file = (
-        f"{settings.dir_info['data_proc']}/{filename}/{lang}/{lang}_{filename}.csv"
-    )
+    tmp_output_dir = f"{settings.dir_info['data_proc']}/{foldername}/{lang}/my_temp"
+
     # https: // engineeringfordatascience.com / posts / how_to_save_pyspark_dataframe_to_single_output_file /
     # headers = spark.createDataFrame([[c.name for c in data.schema.fields]],
     #                                 schema=T.StructType(
@@ -121,35 +144,55 @@ def write_to_single_csv(data: DataFrame, lang, filename):
     data.write.mode("overwrite").option("encoding", "utf-8").csv(
         tmp_output_dir, header=True
     )
-    # os.system(f"cat {tmp_output_dir}/*.csv > {output_file}")
+    # # os.system(f"cat {tmp_output_dir}/*.csv > {output_file}")
 
-    files = glob.glob(tmp_output_dir + f"/*.csv")
-    # for f in files:
-    #     print(f)
+    # files = glob.glob(tmp_output_dir + f"/*.csv")
+    # # for f in files:
+    # #     print(f)
+    #
+    # with open(output_file, "w", newline="", encoding="utf-8") as outfile:
+    #     writer = csv.writer(outfile)
+    #
+    #     # get the header in from the first file.
+    #     with open(files[0], "r", encoding="utf-8") as input_file:
+    #         reader = csv.reader(input_file)
+    #         for row in reader:
+    #             # print(row)
+    #             print(reader.line_num)
+    #             writer.writerow(row)
+    #
+    #     # skip the header in these files.
+    #     for source in files[1:]:
+    #         with open(source, "r", encoding="utf-8") as input_file:
+    #             reader = csv.reader(input_file)
+    #             #
+    #             for row in reader:
+    #                 if reader.line_num > 1:
+    #                     print(row)
+    #                     writer.writerow(row)
+    # # delete tmp_output_dir
+    # shutil.rmtree(tmp_output_dir)
 
-    with open(output_file, "w", newline="", encoding="utf-8") as outfile:
-        writer = csv.writer(outfile)
-
-        # get the header in from the first file.
-        with open(files[0], "r", encoding="utf-8") as input_file:
-            reader = csv.reader(input_file)
-            for row in reader:
-                # print(row)
-                print(reader.line_num)
-                writer.writerow(row)
-
-        # skip the header in these files.
-        for source in files[1:]:
-            with open(source, "r", encoding="utf-8") as input_file:
-                reader = csv.reader(input_file)
-                #
-                for row in reader:
-                    if reader.line_num > 1:
-                        print(row)
-                        writer.writerow(row)
-    # delete tmp_output_dir
-    shutil.rmtree(tmp_output_dir)
+    merge_files(tmp_output_dir, f"{lang}_{foldername}", "csv", has_header=True)
     pass
+
+
+def write_to_single_json(data: DataFrame, lang, foldername):
+    spark = data.sparkSession
+    tmp_output_dir = f"{settings.dir_info['data_proc']}/{foldername}/{lang}/my_temp"
+
+    # output_file = (
+    #     f"{settings.dir_info['data_proc']}/{foldername}/{lang}/{lang}_{foldername}.csv"
+    # )
+
+    data.write.mode("overwrite").option("encoding", "utf-8").json(
+        tmp_output_dir
+    )
+
+    merge_files(tmp_output_dir, f"{lang}_{foldername}", "json")
+
+    pass
+
 
 
 # given a part of speech and a tag, finds example words that

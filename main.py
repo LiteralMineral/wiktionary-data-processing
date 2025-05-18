@@ -1,24 +1,26 @@
+import settings
+settings.init()
+import DatabaseFill.dbprocedures
+
 # other stuff
 from functools import reduce
 import pyspark.sql.functions as funcs
 import pyarrow
+from django.templatetags.i18n import language
 from pyspark.sql.functions import array_contains
 from pyspark.sql.types import MapType
-
-import settings
-import psycopg2
-import DataProcessing.Steps
-import configparser
 
 # project procedures...
 from DataProcessing.Steps import \
     utils, \
     downloads, \
-    inflections  # \
+    inflections, \
+    database
+
+from DatabaseFill import dbprocedures, SparkModels
 
 import shutil
 
-settings.init()
 
 # pyspark stuff
 from pyspark.sql import SparkSession
@@ -45,30 +47,22 @@ spark = SparkSession.builder \
 #     .config('spark.sql.caseSensitive', True) \
 #     .getOrCreate()
 
-# lang = "All"
-lang = "Russian"
-# lang = "German"
-# lang = "Spanish"
-# lang = "Latin"
-# lang = "French"
-# lang = "Japanese"
-# lang = "Arabic"
 langs = [
-    "Russian",
-    "Korean",
-    "Mandarin",
-    "Chinese",
-    "Catalan",
-    "Portuguese",
+    # "Arabic",
+    # "Catalan",
+    # "Chinese",
     "Finnish",
-    "Polish",
-    "Swedish",
-    "German",
-    "Spanish",
-    "Latin",
-    "French",
-    "Japanese",
-    "Arabic"
+    # "French",
+    # "German",
+    # "Japanese",
+    # "Korean",
+    # "Latin",
+    # "Mandarin",
+    # "Polish",
+    # "Portuguese",
+    # "Russian",
+    # "Spanish",
+    # "Swedish",
 ]
 
 # for lang in langs:
@@ -85,38 +79,42 @@ langs = [
 
 
 
-
-# def move(lang):
-    # filename = 'inflectional_tags_by_pos'
-    # df = utils.load_dataset(lang, filename, spark.read.parquet)
-    # utils.save_dataset(df, lang, 'inflection_tags_by_pos')
-    # print(lang)
-
-    # shutil.move(f"{settings.dir_info['data_proc']}/{lang}/{lang}_kaikki_data.jsonl",
-    #             f"{settings.dir_info['data_proc']}/json_files/{lang}_kaikki_data.jsonl")
-    #
-    # pass
-
-
-
-def testing_func(language:str, filename):
+def testing_func(lang:str, filename):
     # load the data
-    data = utils.load_dataset(language, filename, spark.read.parquet)
+    data = utils.load_dataset(lang, filename, spark.read.parquet)
     # do stuff to the data
     data = inflections.collect_inflection_tags(data)
-    data.show()
+    # data.show()
     # save the data
-    utils.save_dataset(data, language, "form_tags")
+    utils.save_dataset(data, lang, "form_tags")
     pass
 
+def word_forms_to_json(lang:str, filename):
+    data = utils.load_dataset(lang, filename, spark.read.parquet)
+    data = inflections.dataframe_to_word_forms(data)
+    # data.show()
+    # data.printSchema()
+    utils.write_to_single_json(data, lang, "word_forms")
 
-utils.apply_to_data(langs, "has_id_column", testing_func, kwargs=None)
 
-all_data = utils.build_collective_data(langs, "form_tags", spark.read.parquet)
-all_data.show(50)
+    # print(map.collectAsMap())
+    # database.word_forms_to_database(data)
+    # utils.write_to_single_csv(data, lang, "word_forms")
 
-# utils.save_dataset(all_data, 'All', 'form_tags', write_to_parquet=False)
-utils.write_to_single_csv(all_data, 'All', "form_tags")
+
+
+# utils.apply_to_data(langs, "has_id_column", testing_func, kwargs=None)
+
+# all_data = utils.build_collective_data(langs, "form_tags", spark.read.parquet)
+# all_data.show(50)
+# utils.write_to_single_csv(all_data, 'All', "form_tags")
+# utils.write_to_single_json(all_data, 'All', "form_tags")
+
+
+# SparkModels.insert_json(f"{settings.dir_info['data_proc']}/word_forms/Russian_word_forms.json", None)
+
+# utils.apply_to_data(langs, "has_id_column", word_forms_to_json, kwargs=None)
+
 
 
 # tab = utils.load_dataset("French", 'form_tags', spark.read.parquet)
@@ -238,4 +236,4 @@ utils.write_to_single_csv(all_data, 'All', "form_tags")
 #           properties={"user": "username", "password": "password"})
 
 
-spark.stop()
+# spark.stop()

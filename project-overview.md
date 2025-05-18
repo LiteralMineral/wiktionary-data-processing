@@ -1,14 +1,54 @@
+# QuiktionaryWordRef
 
-Welcome to my project. In this project, I'll be using data from https://kaikki.org/ to generate flashcard data, importable to a program like Anki (https://apps.ankiweb.net/).
-The end product will have two central modes:
-* data collection/reformatting
-* vocab query and export
+[//]: # (---)
+
+The primary purpose of this project is to allow the user 
+to quickly and easily turn Wiktionary data into CSV files
+that can be imported into the customizable flashcard app Anki 
+(https://apps.ankiweb.net/).
+
+The Wiktionary data I will be using comes from the Kaikki (https://kaikki.org/) 
+machine-readable dictionary project. The project processes Wiktionary data dumps
+and publishes the resulting dataset online.
+
+My plan for this project is to create a database with cleaned-up/reformatted
+data, and build a website which allows users to interact with the data in useful or interesting ways.
+
+Besides the flashcard generation, some interesting things I would like to implement:
+
+
+---
+### Data Collection/Reformatting
+
+1. Download the json files from the source
+2. Assign ids to each word entry in a language dataset.
+
+---
+
+### Word Forms
+
+#### On the Data Preparation side:
+1. Explode the forms
+2. Sort the tags into the properties they represent (number, person, tense, usage, locale, case, mood, inflection-class, etc.)
+
+
+#### On the User Interaction side:
+1. Users will create their own definitions for meanings of properties using a form on the website.
+2. These definitions will include:
+   * what subset, if any, they should be applied to. (should they vary by part of speech? by language? by something else?)
+   * descriptive names and what properties of word forms they should "capture"
+3. The subset of data will be generated.
+
+
+## Senses
+
+1. 
 
 
 
+For all of the datasets, they will be put into the 
 
-
-
+---
 The current status is as follows:
 
 * data collection/reformatting
