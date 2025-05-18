@@ -20,3 +20,4 @@ class WordForm(models.Model):
         null=True
     )
 
+    pass

@@ -63,7 +63,7 @@ def analyze_lang_forms(lang: str, spark_read_func) -> DataFrame:
     return data
 
 
-def extract_word_forms(lang: str, spark_read_func) -> DataFrame:
+def file_to_word_forms(lang: str, spark_read_func) -> DataFrame:
     data = load_dataset(lang, "has_id_column", spark_read_func)
     data = data.select("entry_id", "word", "pos", "forms")
     data = utils.apply_to_columns(
@@ -82,6 +82,25 @@ def extract_word_forms(lang: str, spark_read_func) -> DataFrame:
     # flat_data.show()
     return flat_data
 
+def dataframe_to_word_forms(data: DataFrame) -> DataFrame:
+    # data = load_dataset(lang, "has_id_column", spark_read_func)
+    data = data.select("entry_id", "word", "pos", "forms")
+    data = utils.apply_to_columns(
+        data,  # explode the things that need exploding
+        [item[0] for item in data.dtypes if item[1].startswith("array")],
+        funcs.explode_outer,
+    )
+    flat_schema = utils.flatten_schema(data.schema)
+    flat_data = data.select(flat_schema)
+    # print([item[0] for item in flat_data.dtypes
+    #                                if item[1].startswith("array")])
+    # flat_data = utils.apply_to_columns(flat_data,         # explode the things that need exploding
+    #                               [item[0] for item in flat_data.dtypes
+    #                                if item[1].startswith("array")],
+    #                               funcs.explode_outer)
+
+    # flat_data.show()
+    return flat_data
 
 # takes in the dataframe of inflectional information to be sorted and a
 # dictionary defining which tags fall under which word properties

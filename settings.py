@@ -8,13 +8,14 @@ global config
 global spark_info
 global dir_info
 global server_connection
-
+global db_dict
 
 def init():
     global config
     global spark_info
     global dir_info
     global server_connection
+    global db_dict
 
     os.environ["PYSPARK_PYTHON"] = sys.executable
     os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
@@ -22,12 +23,11 @@ def init():
     config = configparser.ConfigParser()
     config.read("config.ini")
 
-
     db_dict = config["POSTGRESQL"]
     # print(db_dict.items())
     pg_info = {
         "url": db_dict["URL"],
-        "host": F"{db_dict['HOST']}:{db_dict['PORT']}",
+        "host": f"{db_dict['HOST']}:{db_dict['PORT']}",
         "database": db_dict["DATABASE"],
         "user": db_dict["USER"],
         "password": db_dict["PASSWORD"],
