@@ -30,8 +30,12 @@ def outer_join_dataframes(data1: DataFrame, data2: DataFrame, on=None):
     return data1.join(data2, on=on, how="outer")
 
 
-def concat_dataframes(data1: DataFrame, data2: DataFrame):
-    return data1.union(data2)
+def concat_dataframes(*args):
+
+
+    return reduce(lambda acc_df, new_df: acc_df.union(new_df),
+                  args[1:],
+                  args[0])
 
 
 # given: list of strings `langs`,
@@ -70,6 +74,8 @@ def build_collective_data(
         load_dataset(langs[0], filename, spark_read_func),  # the initial result
     )
     return result
+
+
 
 
 def load_datasets(
@@ -172,10 +178,7 @@ def sample_known_tags(
 # given: str language, SparkSession spark, FunctionType func
 # does: applies procedure to the data specified by lang and filename
 # func must take in lang, filename, and save a dataframe
-def apply_to_data(
-    langs: Iterable[str],
-    filename: str,
-    procedure: typing.Callable[[str, str], None],
+def apply_to_data(langs: Iterable[str], filename: str,procedure: typing.Callable[[str, str], None],
     kwargs,
 ) -> None:
     for lang in langs:

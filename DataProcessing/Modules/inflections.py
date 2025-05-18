@@ -21,8 +21,8 @@ from pyspark.sql.functions import lit
 from pyspark.sql.types import *
 
 import settings
-from DataProcessing.Steps import utils
-from DataProcessing.Steps.utils import load_dataset
+from DataProcessing.Modules import utils
+from DataProcessing.Modules.utils import load_dataset
 
 
 # given: dataframe of inflection information
@@ -79,7 +79,6 @@ def extract_word_forms(lang: str, spark_read_func) -> DataFrame:
     #                               [item[0] for item in flat_data.dtypes
     #                                if item[1].startswith("array")],
     #                               funcs.explode_outer)
-
     # flat_data.show()
     return flat_data
 
@@ -145,3 +144,28 @@ def get_definition_entries(self, dataframe, separator="\n\n"):
 
 def filter_inflection_entries(self, dataframe, separator="\n\n"):
     pass
+
+
+
+
+def sample_by_tags(data: DataFrame, lang: str, pos: str, tag: str):
+    # from the dataframe, select the words which have the provided word_form tags
+    subset = data.filter((funcs.array_contains(funcs.col("tags"), tag))
+                         and
+                         (data.pos == pos))
+    subset = subset.sample(fraction=0.2, withReplacement=False, seed=1)\
+        .withColumn("sample_group", funcs.lit(f"{lang}_{pos}_{tag}"))
+    return subset
+
+
+def sample_word_forms(lang: str, spark: SparkSession):
+    # load the word_forms
+    word_forms = utils.load_dataset(lang, "word_forms", spark.read.parquet)
+    # load the list of all distinct word_form tags and pos combos.
+    sample_args = utils.load_dataset(lang, "form_tags", spark.read.parquet)
+    sample_args = funcs.zip_with("pos", "form_tags")
+    print(sample_args)
+
+
+    # tables =
+

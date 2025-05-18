@@ -7,11 +7,11 @@ from pyspark.sql.types import MapType
 
 import settings
 import psycopg2
-import DataProcessing.Steps
+import DataProcessing.Modules
 import configparser
 
 # project procedures...
-from DataProcessing.Steps import \
+from DataProcessing.Modules import \
     utils, \
     downloads, \
     inflections  # \
@@ -46,7 +46,7 @@ spark = SparkSession.builder \
 #     .getOrCreate()
 
 # lang = "All"
-lang = "Russian"
+# lang = "Russian"
 # lang = "German"
 # lang = "Spanish"
 # lang = "Latin"
@@ -99,24 +99,43 @@ langs = [
 
 
 
-def testing_func(language:str, filename):
+def testing_func(lang:str, filename):
     # load the data
-    data = utils.load_dataset(language, filename, spark.read.parquet)
+    data = utils.load_dataset(lang, filename, spark.read.parquet)
     # do stuff to the data
     data = inflections.collect_inflection_tags(data)
     data.show()
     # save the data
-    utils.save_dataset(data, language, "form_tags")
+    utils.save_dataset(data, lang, "form_tags")
     pass
 
+def get_word_forms(lang: str):
+    # data = utils.load_dataset(lang, filename, spark.read.parquet())
+    data = inflections.extract_word_forms(lang, spark.read.parquet)
+    utils.save_dataset(data, lang, "word_forms")
 
-utils.apply_to_data(langs, "has_id_column", testing_func, kwargs=None)
 
-all_data = utils.build_collective_data(langs, "form_tags", spark.read.parquet)
-all_data.show(50)
+
+
+
+
+# utils.apply_to_data(langs, "has_id_column", testing_func, kwargs=None)
+
+# all_data = utils.build_collective_data(langs, "form_tags", spark.read.parquet)
+# all_data.show(50)
 
 # utils.save_dataset(all_data, 'All', 'form_tags', write_to_parquet=False)
-utils.write_to_single_csv(all_data, 'All', "form_tags")
+
+# utils.write_to_single_csv(all_data, 'All', "form_tags")
+
+utils.apply_to_data(langs, "has_id_column", get_word_forms, kwargs=None)
+
+get_word_forms("Russian")
+
+
+# inflections.sample_word_forms("Russian", spark)
+
+
 
 
 # tab = utils.load_dataset("French", 'form_tags', spark.read.parquet)
