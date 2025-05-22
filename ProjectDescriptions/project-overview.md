@@ -15,6 +15,9 @@ My plan for this project is to create a database with cleaned-up/reformatted
 data, and build a website which allows users to interact with the data in useful or interesting ways.
 
 Besides the flashcard generation, some interesting things I would like to implement:
+* network graph describing relationships between word entries. For users to explore relationships between words.The goal is that it will help users identify meaning faster.
+* 
+
 
 
 ---
@@ -22,6 +25,7 @@ Besides the flashcard generation, some interesting things I would like to implem
 
 1. Download the json files from the source
 2. Assign ids to each word entry in a language dataset.
+3. Save as a parquet file.
 
 ---
 
@@ -29,20 +33,23 @@ Besides the flashcard generation, some interesting things I would like to implem
 
 #### On the Data Preparation side:
 1. Explode the forms
-2. Sort the tags into the properties they represent (number, person, tense, usage, locale, case, mood, inflection-class, etc.)
+2. Save as a parquet file (for now)
+3. Sort the tags into the properties they represent (number, person, tense, usage, locale, case, mood, inflection-class, etc.)
 
 
 #### On the User Interaction side:
 1. Users will create their own definitions for meanings of properties using a form on the website.
+2. Defaults will be available which select the appropriate properties for a language's parts of speech.
 2. These definitions will include:
    * what subset, if any, they should be applied to. (should they vary by part of speech? by language? by something else?)
    * descriptive names and what properties of word forms they should "capture"
 3. The subset of data will be generated.
 
 
-## Senses
+### Senses
 
-1. 
+1. Separate out the glosses, including the tags specific to their meaning.
+2. 
 
 
 
@@ -68,10 +75,12 @@ The current status is as follows:
 * Building Frontend:
   * html, JavaScript, React
 
+
+
 To set up your own fork of this...:
+* Why would you do that? This is barely started.
 * Set up a server for yourself
 * Copy the config.ini.template file and fill in the necessary information to connect to your server.
-
 
 
 The different stages of the data processing:
@@ -195,4 +204,5 @@ Get feedback from language experts....
     * language $l \in L$
     * part of speech $p \in P$
     * word $w \in W \wedge w \in l \wedge w \in p$
-    * 
+
+
