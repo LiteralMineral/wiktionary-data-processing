@@ -184,7 +184,6 @@
     "remove"
   ],
   "prep": [
-    "usage_notes",
-    "remove"
+    "usage_notes"
   ]
 }

@@ -21,9 +21,10 @@ from pyspark.sql.functions import lit
 from pyspark.sql.types import *
 
 import settings
-from DataProcessing.Modules import utils
-from DataProcessing.Modules.utils import load_dataset
+from DataProcessing.Modules import utils, InOut
 
+
+# from DataProcessing.Modules.utils import load
 
 # given: dataframe of inflection information
 # returns: a set of tags associated with each part of speech.
@@ -57,20 +58,20 @@ def collect_inflection_tags(data: DataFrame, group: str = "lang", explode_tags=F
     return grouped_by
 
 
-def analyze_lang_forms(lang: str, spark_read_func) -> DataFrame:
-    data = load_dataset("lang", "has_id_column", spark_read_func)
+def analyze_lang_forms(lang: str,
+                       spark: SparkSession) -> DataFrame:
+    data = InOut.load_parquet("lang", "has_id_column", spark)
     data = collect_inflection_tags(data, "lang")
     return data
 
 
-def file_to_word_forms(lang: str, spark_read_func) -> DataFrame:
-    data = load_dataset(lang, "has_id_column", spark_read_func)
-    data = data.select("entry_id", "word", "pos", "forms")
-    data = utils.apply_to_columns(
-        data,  # explode the things that need exploding
-        [item[0] for item in data.dtypes if item[1].startswith("array")],
-        funcs.explode_outer,
-    )
+def file_to_word_forms(lang: str, spark: SparkSession) -> DataFrame:
+    data = InOut.load_parquet(lang, "has_id_column")
+    data = data.select("entry_id", "word", "pos", "forms") # select the basic information as needed...
+    data = utils.apply_to_columns(data,  # explode the things that need exploding
+                                  [item[0] for item in data.dtypes
+                                   if item[1].startswith("array")],
+                                  funcs.explode_outer)
     flat_schema = utils.flatten_schema(data.schema)
     flat_data = data.select(flat_schema)
     # print([item[0] for item in flat_data.dtypes
@@ -84,7 +85,7 @@ def file_to_word_forms(lang: str, spark_read_func) -> DataFrame:
 
 def dataframe_to_word_forms(data: DataFrame) -> DataFrame:
     # data = load_dataset(lang, "has_id_column", spark_read_func)
-    data = data.select("entry_id", "word", "pos", "forms")
+    data = data.select("entry_id", "word", "lang", "pos", "forms")
     data = utils.apply_to_columns(
         data,  # explode the things that need exploding
         [item[0] for item in data.dtypes if item[1].startswith("array")],
@@ -117,74 +118,31 @@ def sort_inflection_tags(data: DataFrame, category_tags: typing.Dict):
     return utils.sort_tags_column(data, "inflection_tags", category_tags)
 
 
-def get_definition_entries(self, dataframe, separator="\n\n"):
-    og = dataframe
-    print(og.count())
-    # separate out the senses, drop the original 'senses' column
-    in_progress = dataframe.withColumn(
-        "separate_senses", funcs.explode_outer("senses")
-    ).drop("senses")
-    # detect if the sense is tagged as "form-of"
-    in_progress = in_progress.withColumn(
-        "not_dict_form", funcs.array_contains("separate_senses.tags", "form-of")
-    )
-    # Turn individual senses into their own strings
-    in_progress = in_progress.withColumn(
-        "separate_senses_glosses", funcs.array_join("separate_senses.glosses", "###")
-    )
-    # TODO: detect if the 'form-of' entries are diminutives, make sure they get included
-    # if the sense was not tagged, it was not tagged with "form-of"
-    in_progress = in_progress.na.fill({"not_dict_form": False})
-    # select the senses that are not an inflection or other form...
-    in_progress = in_progress.where(in_progress.not_dict_form == False).drop(
-        "not_dict_form"
-    )
-
-    grouped_by_id = in_progress.groupBy("entry_id").agg(
-        funcs.concat_ws(
-            separator, funcs.collect_list(in_progress.separate_senses_glosses)
-        ).alias("filtered_glosses")
-    )
-    print(grouped_by_id.count())
-    grouped_by_id = grouped_by_id.withColumnRenamed("entry_id", "entry_id2")
-    # grouped_by_id.show(100, truncate=False)
-
-    in_progress = og.join(
-        grouped_by_id,
-        self.editable_dataset.entry_id == grouped_by_id.entry_id2,
-        "right",
-    )
-    # print(grouped_by_id.count())
-
-    in_progress = in_progress.drop("entry_id2")
-
-    return in_progress
 
 
-def filter_inflection_entries(self, dataframe, separator="\n\n"):
-    pass
-
-
-
-
-def sample_by_tags(data: DataFrame, lang: str, pos: str, tag: str):
-    # from the dataframe, select the words which have the provided word_form tags
-    subset = data.filter((funcs.array_contains(funcs.col("tags"), tag))
-                         and
-                         (data.pos == pos))
-    subset = subset.sample(fraction=0.2, withReplacement=False, seed=1)\
-        .withColumn("sample_group", funcs.lit(f"{lang}_{pos}_{tag}"))
-    return subset
-
-
-def sample_word_forms(lang: str, spark: SparkSession):
+def sample_word_forms(lang: str, min_samples = 30):
     # load the word_forms
-    word_forms = utils.load_dataset(lang, "word_forms", spark.read.parquet)
-    # load the list of all distinct word_form tags and pos combos.
-    sample_args = utils.load_dataset(lang, "form_tags", spark.read.parquet)
-    sample_args = funcs.zip_with("pos", "form_tags")
-    print(sample_args)
+    word_forms = InOut.load_parquet(lang, "word_forms").drop("ruby")
+    # establish array concat....
+    col_map = utils.concat_array_map(word_forms)
+    # establish the sample_tag_name
+    sample_tag_name = "lang/pos/form_tag"
+    # add the explode column...
+    col_map[sample_tag_name] = funcs.explode_outer("tags")
 
+    # apply the map and then make the sample_tag_name column.
+    sample_tags = word_forms.withColumns(col_map)\
+        .withColumn(sample_tag_name, funcs.concat_ws("/", "lang","pos",sample_tag_name))
+    # sample_tags.explain()
 
-    # tables =
+    # establish how to sample them....
+    fractions = sample_tags.groupBy(sample_tag_name).count().collect()
+    frac_map = dict()
+    for mapping in fractions:
+        frac_map[mapping[sample_tag_name]] = min(1.0, (min_samples /mapping["count"]))
+    # print(frac_map)
 
+    # actually sample it
+    samples = sample_tags.sampleBy(sample_tag_name, frac_map, seed=1).sort(sample_tag_name)
+    InOut.save_parquet(samples, lang, "sample_word_forms")
+    InOut.write_to_single_csv(samples, lang, "sample_word_forms")

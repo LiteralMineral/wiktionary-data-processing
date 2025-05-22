@@ -44,7 +44,8 @@
     "dative",
     "accusative",
     "instrumental",
-    "prepositional"
+    "nominative",
+    "ablative"
   ],
   "animacy": [
     "animate",
@@ -74,13 +75,15 @@
     "Portugal",
     "colloquial"
   ],
-  "remove": [
-    "canonical",
-    "romanization",
+  "kaikki_processing_notes": [
     "table-tags",
     "inflection-template",
     "error-unknown-tag",
     "error-unrecognized-form"
+  ],
+  "metadata": [
+    "canonical",
+    "romanization"
   ],
   "morphology": [
     "class"
@@ -92,20 +95,23 @@
     "romanization",
     "hiragana",
     "katakana"
-    
-
-
-
   ],
-  
   "yet-to-sort": [
+    "lative",
+    "prolative",
+    "situative",
+    "superessive",
+    "delative",
+    "abessive",
+    "allative",
+    "adessive",
+    "inessive",
+    "essive",
+    "prepositional",
     "oppositive",
     "elative",
     "instructive",
     "illative",
-    "nominative",
-    "prolative",
-    "singular",
     "multiplicative",
     "sublative",
     "causative",
@@ -113,23 +119,11 @@
     "comitative",
     "plural",
     "partitive",
-    "delative",
-    "abessive",
-
-    "allative",
-
-    "adessive",
-    "inessive",
-    "essive",
-    "ablative",
-    "lative",
     "accusative",
+    "lative",
     "translative",
     "temporal",
     "distributive",
-    "inflection-template",
-    "situative",
-    "superessive",
     "alternative"
   ]
 }

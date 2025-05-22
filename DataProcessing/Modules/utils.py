@@ -21,231 +21,79 @@ from pyspark.sql import (
     DataFrameReader,
 )
 from pyspark.sql.functions import lit
-from scripts.h2py import filedict
+from pyspark.sql.types import MapType
 
 import settings
-
+from DataProcessing.Modules import InOut
 
 def outer_join_dataframes(data1: DataFrame, data2: DataFrame, on=None):
     return data1.join(data2, on=on, how="outer")
 
 
 def concat_dataframes(*args):
-
-
     return reduce(lambda acc_df, new_df: acc_df.union(new_df),
                   args[1:],
                   args[0])
 
 
-# given: list of strings `langs`,
-#        string `data` (representing the folder in which the data will be found), and
-#        SparkSession spark
-# does:  loads the files and iteratively combines their columns.
-def join_language_data(langs, filename, spark: SparkSession):
-    tables = [
-        spark.read.parquet(f"{settings.dir_info['data_proc']}/{filename}/{lang}")
-        for lang in langs
-    ]
-    for tab in tables:
-        print(tab.columns)
-        print(type(tab.columns))
-
-    result = reduce(
-        lambda acc_df, df: outer_join_dataframes(
-            acc_df, df, list(set(acc_df.columns) & set(df.columns))
-        ),
-        tables[1:],  # iterate over the tables other than the first one.
-        tables[0],
-    )
-    return result
-    # pass
 
 
-# expects the data to be loaded for each one....
-def build_collective_data(
-    langs: typing.List[str], filename: str, spark_read_func=types.FunctionType
-) -> DataFrame:
-    result = reduce(
-        lambda acc_df, lang: acc_df.union(
-            load_dataset(lang, filename, spark_read_func)
-        ),
-        langs[1:],  # iterate over the languages.
-        load_dataset(langs[0], filename, spark_read_func),  # the initial result
+def load_and_join_list(langs: List[str], foldername: str):
+    """
+    given:
+        * list of strings `langs`
+        * string `data` (representing the folder in which the data will be found)
+        * SparkSession spark
+    does: recursively loads and combines the files and combines their columns where they match
+    """
+    # helper function
+    def join_dataframes(data1: DataFrame, data2: DataFrame) -> DataFrame:
+        return data1.join(data2,
+                          list(set(data1.columns) & set(data2.columns)),
+                          # join them on the intersection of their columns
+                          how="outer")  # join them outer.
+
+    result = reduce(lambda acc_df, lang:
+                    join_dataframes(acc_df,
+                                    InOut.load_parquet(lang, foldername)),
+        langs[1:],  # iterate over the languages other than the first one.
+        InOut.load_parquet(langs[0], foldername) # get the first one loaded
     )
     return result
 
 
+def load_and_union_data(langs: List[str], foldername: str) -> DataFrame:
+    result = reduce(lambda acc_df, lang: acc_df.union(InOut.load_parquet(lang, foldername)),
+                    langs[1:],
+                    InOut.load_parquet(langs[0], foldername))
+    return result
 
-
-def load_datasets(
-    langs, filename, spark_read_func: types.FunctionType
-) -> typing.List[DataFrame]:
-    tables = [
-        spark_read_func(f"{settings.dir_info['data_proc']}/{filename}/{lang}")
-        for lang in langs
-    ]
-    return tables
-
-
-def load_dataset(lang: str, filename: str, spark_read_func) -> DataFrame:
-    table = spark_read_func(f"{settings.dir_info['data_proc']}/{filename}/{lang}")
-    return table
-
-
-def save_dataset(
-    table: DataFrame, lang: str, filename: str, write_to_parquet: bool = True
-):
-    filename = f"{settings.dir_info['data_proc']}/{filename}/{lang}"
-    if write_to_parquet:
-        table.write.mode("overwrite").parquet(filename)
-    else:
-        table.write.mode("overwrite").csv(filename)
-
-
-# tables: tuple(Dataframe, string)
-# filename: what to save it as
-def save_datasets(tables, filename: str):
-    for tup in tables:
-        save_dataset(tup[0], tup[1], filename)
-
-
-#
-def merge_files(tmp_output_dir, file_name, file_extension, has_header=False):
-
-    files = glob.glob(tmp_output_dir + "/*" + file_extension)
-    output_file_name = f"{tmp_output_dir}/../../{file_name}.{file_extension}"
-
-    with open(output_file_name, "w", newline="", encoding="utf-8") as outfile:
-
-        with open(files[0], "r", newline="", encoding="utf-8") as input_file:
-            for row in input_file.readlines():
-                outfile.write(row)
-
-        for source in files[1:]:
-            # print(source)
-            with open(source, "r", newline="", encoding="utf-8") as input_file:
-                src = input_file.readlines()
-                lines = src[1:] if has_header else src
-                for row in lines:
-                    outfile.write(row)
-
-    # delete tmp_output_dir
-    shutil.rmtree(tmp_output_dir)
-
-
-
-
-def write_to_single_csv(data: DataFrame, lang, foldername):
-    spark = data.sparkSession
-    tmp_output_dir = f"{settings.dir_info['data_proc']}/{foldername}/{lang}/my_temp"
-
-    # https: // engineeringfordatascience.com / posts / how_to_save_pyspark_dataframe_to_single_output_file /
-    # headers = spark.createDataFrame([[c.name for c in data.schema.fields]],
-    #                                 schema=T.StructType(
-    #                                     [T.StructField(c.name, T.StringType(),False)
-    #                                      for c in data.schema.fields]))
-    # headers.write.mode('overwrite').option("encoding", "utf-8").csv(tmp_output_dir, header)
-
-    data.write.mode("overwrite").option("encoding", "utf-8").csv(
-        tmp_output_dir, header=True
-    )
-    # # os.system(f"cat {tmp_output_dir}/*.csv > {output_file}")
-
-    # files = glob.glob(tmp_output_dir + f"/*.csv")
-    # # for f in files:
-    # #     print(f)
-    #
-    # with open(output_file, "w", newline="", encoding="utf-8") as outfile:
-    #     writer = csv.writer(outfile)
-    #
-    #     # get the header in from the first file.
-    #     with open(files[0], "r", encoding="utf-8") as input_file:
-    #         reader = csv.reader(input_file)
-    #         for row in reader:
-    #             # print(row)
-    #             print(reader.line_num)
-    #             writer.writerow(row)
-    #
-    #     # skip the header in these files.
-    #     for source in files[1:]:
-    #         with open(source, "r", encoding="utf-8") as input_file:
-    #             reader = csv.reader(input_file)
-    #             #
-    #             for row in reader:
-    #                 if reader.line_num > 1:
-    #                     print(row)
-    #                     writer.writerow(row)
-    # # delete tmp_output_dir
-    # shutil.rmtree(tmp_output_dir)
-
-    merge_files(tmp_output_dir, f"{lang}_{foldername}", "csv", has_header=True)
-    pass
-
-
-def write_to_single_json(data: DataFrame, lang, foldername):
-    spark = data.sparkSession
-    tmp_output_dir = f"{settings.dir_info['data_proc']}/{foldername}/{lang}/my_temp"
-
-    # output_file = (
-    #     f"{settings.dir_info['data_proc']}/{foldername}/{lang}/{lang}_{foldername}.csv"
-    # )
-
-    data.write.mode("overwrite").option("encoding", "utf-8").json(
-        tmp_output_dir
-    )
-
-    merge_files(tmp_output_dir, f"{lang}_{foldername}", "json")
-
-    pass
-
-
-
-# given a part of speech and a tag, finds example words that
-# are of that part of speech and have that tag
-# This is to prepare data for language experts to look at
-# in order to give me their opinions.
-def sample(data: DataFrame, pos: str, tag: str) -> DataFrame:
-    # sample from the dataframe. and return it.
-    pass
-
-
-# takes in the language to sample tags from.
-# samples word_form data for each pos and tag combo.
-def sample_known_tags(
-    lang: str,
-    pos: str,
-) -> DataFrame:
-    pass
-
+def load_union_save(langs: List[str],foldername: str,  union_name: str = None) -> None:
+    if isinstance(union_name, NoneType):
+        union_name = "_".join(langs)
+    result = load_and_union_data(langs, foldername)
+    InOut.save_parquet(result, f"{union_name}", foldername)
 
 # given: str language, SparkSession spark, FunctionType func
 # does: applies procedure to the data specified by lang and filename
 # func must take in lang, filename, and save a dataframe
-def apply_to_data(langs: Iterable[str], filename: str,procedure: typing.Callable[[str, str], None],
-    kwargs,
-) -> None:
+def load_apply_save(langs: List[str],
+                    in_folder: str, out_folder: str,
+                    function: typing.Callable[[DataFrame], DataFrame]) -> None:
+    """load the data, apply the function, save the dataframe. The function must
+    only take in a dataframe. Any need for an additional argument can be handled
+    by constructing a lambda function with explicitly filled values."""
     for lang in langs:
-        procedure(lang, filename)
+        data = InOut.load_parquet(lang, in_folder)
+        data = function(data)
+        # data.show()
+        InOut.save_parquet(data, lang, out_folder)
+
+    pass
 
 
-# def apply_to_columns(data: DataFrame, col_names: Iterable[str], func, extra_col: Column = None):
-#     col_dict = {}
-#     if type(extra_col) == NoneType:
-#         for col in col_names:
-#             col_dict[col] = func(data[col])
-#     else:
-#         for col in col_names:
-#             col_dict[col] = func(data[col], extra_col)
-#
-#     print(col_dict)
-#     data = data.withColumns(col_dict)
-# data.explain()
-#
-# return data
 
-
-def apply_to_columns(data: DataFrame, col_names: Iterable[str], func):
+def apply_to_columns(data: DataFrame, col_names: List[str], func) -> DataFrame:
     return reduce(
         lambda acc_df, col_name: acc_df.withColumn(
             col_name, func(col_name).alias(col_name)
@@ -254,6 +102,33 @@ def apply_to_columns(data: DataFrame, col_names: Iterable[str], func):
         data,
     )
 
+def reduce_columns(data:DataFrame, new_name: str, col_names: List[str], func) -> DataFrame:
+    new_col = reduce(lambda col1, col2: func(col1, col2),
+                     col_names
+                     )
+    return data.withColumn(new_name, new_col)
+
+
+
+def select_array_cols(data: DataFrame) -> List[str]:
+    return [item[0] for item in data.dtypes if item[1].startswith("array")]
+
+def make_map_dict(cols: List[str], map_function):
+    map_dict = dict()
+    for c in cols:
+        map_dict[c] = map_function(c)
+
+    return map_dict
+
+
+
+
+def concat_array_map(data: DataFrame, sep = "_") -> dict:
+    map = dict()
+    for col_name in [item[0] for item in data.dtypes if item[1].startswith("array")]:
+        map[col_name] = funcs.concat_ws(sep, col_name)
+
+    return map
 
 # input: dataframe: dataframe to do the operation on
 #        string: name of column to filter
@@ -275,9 +150,9 @@ def sort_tags_column(data: DataFrame, column_name, filter_tags: typing.Dict):
 
 # def recursively_flatten_column(data: DataFrame, col_name: str) -> DataFrame:
 
-
-def flatten_schema(schema: T.StructType, prefix=None) -> typing.Iterable[str]:
+def flatten_schema(schema: T.StructType, prefix=None, level = -1, iter_count = 0) -> typing.List[str]:
     fields = []
+
     for field in schema.fields:
         name = f"{prefix}.{field.name}" if prefix else field.name
         # rename = f"{prefix}_{field.name}" if prefix else field.name
@@ -288,31 +163,61 @@ def flatten_schema(schema: T.StructType, prefix=None) -> typing.Iterable[str]:
             dtype = dtype.elementType
             # print(dtype)
         if isinstance(dtype, T.StructType):
-            fields += flatten_schema(dtype, prefix=name)
+            if level != iter_count:
+                fields += flatten_schema(dtype, prefix=name,
+                                         level = level, iter_count= iter_count + 1)
         else:
             fields.append(name)
 
     return fields
 
 
-def find_arrays(schema: T.StructType, prefix=None) -> typing.Iterable[str]:
-    fields = []
-    for field in schema.fields:
-        name = f"{prefix}.{field.name}" if prefix else field.name
-        dtype = field.dataType
-        # print(f"{name}\t{dtype}\n\n")
-        if isinstance(dtype, T.ArrayType):
-            fields.append(name)
-            # print(f"node {name}\t{isinstance(dtype, T.ArrayType)}")
+# def find_arrays(schema: T.StructType, prefix=None) -> typing.Iterable[str]:
+#     fields = []
+#     for field in schema.fields:
+#         name = f"{prefix}.{field.name}" if prefix else field.name
+#         dtype = field.dataType
+#         # print(f"{name}\t{dtype}\n\n")
+#         if isinstance(dtype, T.ArrayType):
+#             fields.append(name)
+#             # print(f"node {name}\t{isinstance(dtype, T.ArrayType)}")
+#
+#             dtype = dtype.elementType
+#             # print(f"node {name}\t{isinstance(dtype, T.ArrayType)}")
+#
+#             # print(dtype)
+#         if isinstance(dtype, T.StructType):
+#             # print(f"{name}\t{isinstance(dtype, T.ArrayType)}")
+#             fields += flatten_schema(dtype, prefix=name)
+#         else:
+#             print(f"leaf node {name}\t{isinstance(dtype, T.ArrayType)}")
+#             # fields.append(name)
+#     return fields
 
-            dtype = dtype.elementType
-            # print(f"node {name}\t{isinstance(dtype, T.ArrayType)}")
 
-            # print(dtype)
-        if isinstance(dtype, T.StructType):
-            # print(f"{name}\t{isinstance(dtype, T.ArrayType)}")
-            fields += flatten_schema(dtype, prefix=name)
-        else:
-            print(f"leaf node {name}\t{isinstance(dtype, T.ArrayType)}")
-            # fields.append(name)
-    return fields
+def explode_array_cols(data: DataFrame, array_cols: List[str]) -> DataFrame:
+    # reduce those array columns with explode
+    data = reduce(lambda acc_df, col_name: acc_df.withColumn(col_name,
+                                                             funcs.explode_outer(col_name)),
+                  array_cols,
+                  data)
+    # flatten the schema
+    data.printSchema()
+    # print(flatten_schema(data.schema))
+    data = data.select([funcs.col(col_name)\
+                       .alias(str.replace(col_name,".","/"))
+                        for col_name in flatten_schema(data.schema, level=1)])
+    data.printSchema()
+    return data
+
+def explode_all_arrays(data: DataFrame, level = -1) -> DataFrame:
+    # get the array columns
+    iter_count = 0
+    array_cols = [item[0] for item in data.dtypes if item[1].startswith("array")]
+    while len(array_cols) > 0 and level != iter_count:
+        data = explode_array_cols(data, array_cols)
+        array_cols = [item[0] for item in data.dtypes if item[1].startswith("array")]
+        iter_count+= 1
+
+    return data
+

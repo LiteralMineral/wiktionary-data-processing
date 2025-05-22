@@ -14,7 +14,8 @@ import configparser
 from DataProcessing.Modules import \
     utils, \
     downloads, \
-    inflections  # \
+    inflections,\
+    InOut  # \
 
 import shutil
 
@@ -33,6 +34,8 @@ spark = SparkSession.builder \
     .config('spark.sql.debug.maxToStringFields', 500) \
     .config('spark.sql.caseSensitive', True) \
     .getOrCreate()
+
+InOut.init(spark)
 
 ## with database connection.... that's currently causing issues.
 # spark = SparkSession.builder \
@@ -54,21 +57,21 @@ spark = SparkSession.builder \
 # lang = "Japanese"
 # lang = "Arabic"
 langs = [
-    "Russian",
-    "Korean",
-    "Mandarin",
-    "Chinese",
+    "Arabic",
     "Catalan",
-    "Portuguese",
+    "Chinese",
     "Finnish",
-    "Polish",
-    "Swedish",
-    "German",
-    "Spanish",
-    "Latin",
     "French",
+    "German",
     "Japanese",
-    "Arabic"
+    "Korean",
+    "Latin",
+    "Mandarin",
+    "Polish",
+    "Portuguese",
+    "Russian",
+    "Spanish",
+    "Swedish"
 ]
 
 # for lang in langs:
@@ -101,160 +104,80 @@ langs = [
 
 def testing_func(lang:str, filename):
     # load the data
-    data = utils.load_dataset(lang, filename, spark.read.parquet)
+    data = InOut.load_parquet(lang, filename)
     # do stuff to the data
     data = inflections.collect_inflection_tags(data)
     data.show()
     # save the data
-    utils.save_dataset(data, lang, "form_tags")
+    InOut.save_parquet(data, lang, "form_tags")
     pass
 
-def get_word_forms(lang: str):
-    # data = utils.load_dataset(lang, filename, spark.read.parquet())
-    data = inflections.extract_word_forms(lang, spark.read.parquet)
-    utils.save_dataset(data, lang, "word_forms")
+
+# utils.load_apply_save(langs,
+#                       "has_id_column",
+#                       "word_forms",
+#                       inflections.dataframe_to_word_forms)
+
+
+# utils.load_union_save(langs,
+#                       "form_tags",
+#                       "All")
 
 
 
+all_form_tags = InOut.load_parquet("All", "form_tags")
+all_form_tags = all_form_tags.groupBy("form_tags").pivot("lang").agg(funcs.collect_set('pos'))
+# for lang in langs:
+#     lang_form_tags = all_form_tags.select(["form_tags", lang]).filter(funcs.isnotnull(lang))
+#     lang_form_tags.show(40, truncate=100)
 
 
+array_cols = utils.select_array_cols(all_form_tags)
 
-# utils.apply_to_data(langs, "has_id_column", testing_func, kwargs=None)
+all_langs = utils.reduce_columns(all_form_tags, "all_langs",
+                                     array_cols, funcs.array_union)
 
-# all_data = utils.build_collective_data(langs, "form_tags", spark.read.parquet)
-# all_data.show(50)
+all_langs = all_langs.withColumn("array_size", funcs.array_size("all_langs"))\
+    .sort("array_size", ascending=False)\
+    .drop("array_size")
 
-# utils.save_dataset(all_data, 'All', 'form_tags', write_to_parquet=False)
+all_langs = all_langs.withColumn("all_langs", funcs.concat_ws("\n", "all_langs"))
 
-# utils.write_to_single_csv(all_data, 'All', "form_tags")
+all_langs = all_langs.select("form_tags", "all_langs")
+# all
+InOut.write_to_single_csv(all_langs, "All", "form_tags_by_pos")
 
-utils.apply_to_data(langs, "has_id_column", get_word_forms, kwargs=None)
+# all_langs = all_langs.select("form_tags", "all_langs").show(100, truncate=50)
 
-get_word_forms("Russian")
-
-
-# inflections.sample_word_forms("Russian", spark)
-
-
-
-
-# tab = utils.load_dataset("French", 'form_tags', spark.read.parquet)
-# tab = utils.load_dataset("French", 'has_id_column', spark.read.parquet)
-# tab = inflections.extract_word_forms('Russian', spark.read.parquet)
-# tab = inflections.extract_word_forms('French', spark.read.parquet)
-# tab = inflections.extract_word_forms('Japanese', spark.read.parquet)
-# tab = inflections.extract_word_forms('Finnish', spark.read.parquet)
-# tab = inflections.extract_word_forms('Korean', spark.read.parquet)
-# tab.where(funcs.array_contains(funcs.col('tags'), "Rōmaji")).show(500)
-# tab.where(funcs.array_contains(funcs.col('tags'), "kyūjitai")).show(500)
-# tab.where(funcs.array_contains(funcs.col('tags'), "")).show(500)
-# tab.where(funcs.array_contains(funcs.col('tags'), "essive")).show(200)
-# tab.where(funcs.isnotnull(funcs.col('ruby'))).show(200)
-# tab.where((funcs.col('pos').contains("character"))).show(500)
-# print(tab.where(funcs.isnotnull(funcs.col('word'))).count())
-# print(tab.count())
+# all_form_tags.show()
+# col_map = utils.make_map_dict(array_cols, lambda x: funcs)
 
 
-# tab = tab.select(['entry_id', 'word', 'lang', 'forms'])
-# forms_schema = tab.select(['entry_id', 'word', 'lang', 'forms']).schema
-# flat_schema = utils.flatten_schema(forms_schema, data= tab)
-# flat_schema.printSchema()
-
-# exploded = utils.find_arrays(tab.schema)
-# tab.printSchema()
-# print(exploded)
-
-
-
-
-# flat_tab = tab.select(flat_schema)
-# flat_tab.show(truncate=500)
-# tab.printSchema()
-# flat_tab.printSchema()
-
-# flat_tab = utils.apply_to_columns(flat_tab, flat_tab.columns, funcs.explode_outer)
-# flat_tab = flat_tab
-
-# col_name = 'forms'
-# tab.printSchema()
-# tab = tab.withColumn(col_name, funcs.explode_outer(col_name))
-# col_name += ".tags"
-# tab = tab.withColumn(col_name, funcs.explode_outer(col_name))
-# tab.printSchema()
-
-# flat_tab.show(truncate=500)
-# flat_tab.printSchema()
+# all_form_tags = all_form_tags.withColumns(utils.concat_array_map(all_form_tags, "\n"))
+# all_form_tags.show(100, truncate=200)
 
 # for lang in langs:
-#     move(lang)
-
-# tables = utils.load_datasets(langs, 'has_id_column', spark.read.parquet)
-# for table in tables:
-    # table.show()
-    # table.printSchema()
-
-
-# zipped_tables = zip(tables, langs)
-# utils.save_datasets(zipped_tables, 'has_id_column')
+#     lang_form_tags = all_form_tags.select(["form_tags", lang])\
+#         .filter((funcs.isnotnull(lang)) & (funcs.col(lang) != ""))\
+#         .sort("form_tags")
+#     InOut.save_parquet(lang_form_tags, lang, "form_tags_by_pos")
+    # InOut.write_to_single_csv(lang_form_tags, lang, "form_tags_by_pos")
 
 
 
-# tables = utils.load_datasets(langs, 'has_id_column', spark.read.parquet)
-# inflection_tags = utils.apply_to_df(tables, inflections.analyze_inflection_tags)
-# zipped_inflections = zip(inflection_tags, langs)
-# utils.save_datasets(zipped_inflections, "inflectional_tags_by_pos")
-
-# for t in inflection_tags:
-#     t.show()
-# for t in zipped_inflections:
-#     t[0].show()
-
-
-# all_lang_tags = utils.join_language_data(langs, "inflection_tags_by_pos", spark)#, "lang")
-# all_lang_tags.show()
-
-# all_lang_tags = reduce(lambda acc_df, col_name: acc_df.withColumn(col_name,
-#                                                                   funcs.concat_ws("\n", col_name)),
-#                        all_lang_tags.columns,
-#                        all_lang_tags)
-# all_lang_tags.show()
-# all_lang_tags.write.mode('overwrite')\
-#     .option("header", True)\
-#     .csv(f"{settings.dir_info['data_proc']}/inflection_tags_by_pos/All")
+    # lang_form_tags.show(100, truncate=50)
+# for lang in langs:
+#     inflections.sample_word_forms(lang, min_samples=100)
 
 
 
-## initial download
-# downloads.download(lang)
-
-## add ids
-# df = downloads.assign_ids(spark, lang)
 
 
-## read from parquet if possible...
-# df = spark.read.parquet(f"DataProcessing/Data/{lang}/has_id_column")
 
 
-# df.show()
+# sample = inflections.sample_word_forms("Russian", min_samples=100)
 
-## read from postgresql server if possible
-# df = spark.read.jdbc(pg_info['url'], f"wiktionary_info.{lang}_json_info", properties=db_props)
 
-## analyze the tags....
-# inflection_data = df.select(['entry_id', 'lang', 'word', 'pos', 'forms'])
-
-# df.printSchema(1)
-# inflection_data.show(20)
-
-# tags = inflections.analyze_inflection_tags(inflection_data)
-
-# tags.show(truncate=500)
-
-# Specifying create table column data types on write
-# jdbcDF.write \
-#     .option("createTableColumnTypes", "name CHAR(64), comments VARCHAR(1024)") \
-#     .jdbc("jdbc:postgresql:dbserver", "schema.tablename",
-#           properties={"user": "username", "password": "password"})
 
 
 spark.stop()
