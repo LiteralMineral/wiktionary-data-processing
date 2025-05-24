@@ -202,11 +202,11 @@ def explode_array_cols(data: DataFrame, array_cols: List[str]) -> DataFrame:
                   array_cols,
                   data)
     # flatten the schema
-    data.printSchema()
+    # data.printSchema()
     # print(flatten_schema(data.schema))
     data = data.select([funcs.col(col_name)\
                        .alias(str.replace(col_name,".","/"))
-                        for col_name in flatten_schema(data.schema, level=1)])
+                        for col_name in flatten_schema(data.schema)])
     data.printSchema()
     return data
 

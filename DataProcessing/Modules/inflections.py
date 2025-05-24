@@ -9,15 +9,11 @@ from configparser import ConfigParser
 import json
 import requests
 import os
+from typing import Dict
 
 # pyspark stuff
-from types import *
-from typing import Dict
 from pyspark.sql import *
 from pyspark.sql import SparkSession, functions as funcs
-from pyspark.sql.functions import lit
-
-# from pyspark.sql.connect.functions import lit
 from pyspark.sql.types import *
 
 import settings

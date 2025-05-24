@@ -15,7 +15,8 @@ from DataProcessing.Modules import \
     utils, \
     downloads, \
     inflections,\
-    InOut  # \
+    InOut, \
+    senses
 
 import shutil
 
@@ -74,110 +75,29 @@ langs = [
     "Swedish"
 ]
 
-# for lang in langs:
-#     downloads.download(lang)
-#     downloads.assign_ids(spark, lang)
 
-# table = utils.load_dataset('Arabic','has_id_column', spark.read.parquet)
-# inflections.analyze_inflection_tags(table, 'lang')
+data = InOut.load_parquet("Japanese", "has_id_column")
+# non_arrays = [item[0] for item in data.dtypes if not (item[1].startswith("array") or item[1].startswith("struct"))]
+# non_arrays.append("senses")
 
+print(data.columns)
+data.printSchema(3)
 
-# all_langs = utils.build_collective_data(langs, 'has_id_column', spark.read.parquet)
+items = senses.get_definitions(data)
+items.show(truncate=200)
+items.printSchema()
+columns = items.columns
 
-# downloads.assign_ids(spark, 'Latin')
-
-
-
-
-# def move(lang):
-    # filename = 'inflectional_tags_by_pos'
-    # df = utils.load_dataset(lang, filename, spark.read.parquet)
-    # utils.save_dataset(df, lang, 'inflection_tags_by_pos')
-    # print(lang)
-
-    # shutil.move(f"{settings.dir_info['data_proc']}/{lang}/{lang}_kaikki_data.jsonl",
-    #             f"{settings.dir_info['data_proc']}/json_files/{lang}_kaikki_data.jsonl")
-    #
-    # pass
+# items.select([col for col in items.columns if col.startswith("senses/related")]).show()
 
 
+# for col in columns:
+#     print(col)
+#     items.filter(funcs.isnotnull(col)).show(truncate=200)
 
-def testing_func(lang:str, filename):
-    # load the data
-    data = InOut.load_parquet(lang, filename)
-    # do stuff to the data
-    data = inflections.collect_inflection_tags(data)
-    data.show()
-    # save the data
-    InOut.save_parquet(data, lang, "form_tags")
-    pass
+# items.show()
 
-
-# utils.load_apply_save(langs,
-#                       "has_id_column",
-#                       "word_forms",
-#                       inflections.dataframe_to_word_forms)
-
-
-# utils.load_union_save(langs,
-#                       "form_tags",
-#                       "All")
-
-
-
-all_form_tags = InOut.load_parquet("All", "form_tags")
-all_form_tags = all_form_tags.groupBy("form_tags").pivot("lang").agg(funcs.collect_set('pos'))
-# for lang in langs:
-#     lang_form_tags = all_form_tags.select(["form_tags", lang]).filter(funcs.isnotnull(lang))
-#     lang_form_tags.show(40, truncate=100)
-
-
-array_cols = utils.select_array_cols(all_form_tags)
-
-all_langs = utils.reduce_columns(all_form_tags, "all_langs",
-                                     array_cols, funcs.array_union)
-
-all_langs = all_langs.withColumn("array_size", funcs.array_size("all_langs"))\
-    .sort("array_size", ascending=False)\
-    .drop("array_size")
-
-all_langs = all_langs.withColumn("all_langs", funcs.concat_ws("\n", "all_langs"))
-
-all_langs = all_langs.select("form_tags", "all_langs")
-# all
-InOut.write_to_single_csv(all_langs, "All", "form_tags_by_pos")
-
-# all_langs = all_langs.select("form_tags", "all_langs").show(100, truncate=50)
-
-# all_form_tags.show()
-# col_map = utils.make_map_dict(array_cols, lambda x: funcs)
-
-
-# all_form_tags = all_form_tags.withColumns(utils.concat_array_map(all_form_tags, "\n"))
-# all_form_tags.show(100, truncate=200)
-
-# for lang in langs:
-#     lang_form_tags = all_form_tags.select(["form_tags", lang])\
-#         .filter((funcs.isnotnull(lang)) & (funcs.col(lang) != ""))\
-#         .sort("form_tags")
-#     InOut.save_parquet(lang_form_tags, lang, "form_tags_by_pos")
-    # InOut.write_to_single_csv(lang_form_tags, lang, "form_tags_by_pos")
-
-
-
-    # lang_form_tags.show(100, truncate=50)
-# for lang in langs:
-#     inflections.sample_word_forms(lang, min_samples=100)
-
-
-
-
-
-
-
-# sample = inflections.sample_word_forms("Russian", min_samples=100)
-
-
+# senses.show()
 
 
 spark.stop()
