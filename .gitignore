@@ -7,4 +7,8 @@ __pycache__/
 *.ini
 
 
+# just to keep testing straight...
+main.py
+*.xlsx
+
 node_modules/
