@@ -6,5 +6,6 @@ __pycache__/
 .idea/
 *.ini
 
+*.xlsx
 
 node_modules/
