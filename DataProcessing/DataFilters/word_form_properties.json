@@ -1,14 +1,23 @@
 {
+  "animacy" : [
+
+  ]
   "number": [
     "singular",
     "plural",
     "collective",
-    "dual"
+    "dual",
+    "trial",
+    "paucal"
   ],
   "subject": [
     "first-person",
     "second-person",
     "third-person"
+  ],
+  "clusivity": [
+    "inclusive",
+    "exclusive"
   ],
   "gender": [
     "masculine",
@@ -17,13 +26,32 @@
   ],
   "aspect": [
     "perfective",
-    "imperfective"
+    "imperfective",
+    "perfect",
+    "imperfect"
   ],
-  "tense": [
+  "tense-aspect-mood-evidentiality" : [
     "past",
     "present",
     "future",
-    "imperative"
+    "imperative",
+    "perfect",
+    "pluperfect",
+    "perfective",
+    "progressive",
+    "imperfect",
+    "imperfective",
+    "subjunctive",
+    "jussive",
+    "indicative",
+    "conditional",
+    "optative",
+    "imperative",
+    "potential",
+    "presumptive",
+    "hypothetical",
+    "inferential",
+    "interrogative"
   ],
   "participle": [
     "participle"
@@ -34,7 +62,7 @@
   "shortform": [
     "short-form"
   ],
-  "active": [
+  "voice": [
     "active",
     "passive"
   ],
@@ -58,10 +86,17 @@
   "different_forms" : [
     "adjective",
     "diminutive",
-    "relational"
+    "relational",
+    "short-form",
+    "participle",
+    "adverbial",
+    "noun-to-verb",
+    "adjective"
   ],
-  "regularity" : [
-    "irregular"
+  "derived-pos" : [
+    "adverbial",
+    "noun-to-verb",
+    "adjective"
   ],
   "usage_notes" : [
     "rare",
@@ -69,21 +104,43 @@
     "dated",
     "obsolete",
     "archaic",
-    "alternative",
-    "nonstandard",
-    "Moscow",
-    "Portugal",
     "colloquial"
+  ],
+  "variation" : [
+    "rare",
+    "irregular",
+    "nonstandard",
+    "alternative",
+    "diminutive",
+    "relational"
+  ],
+  "social-connotation": [
+    "archaic",
+    "dated",
+    "obsolete",
+    "colloquial",
+    "polite",
+    "formal",
+    "informal"
+  ],
+  "region" : [
+    "Moscow",
+    "Portugal"
+  ],
+  "dialect" : [
+  ],
+  "definiteness" : [
+    "definite",
+    "indefinite"
+  ],
+  "specificity" : [
+
   ],
   "kaikki_processing_notes": [
     "table-tags",
     "inflection-template",
     "error-unknown-tag",
     "error-unrecognized-form"
-  ],
-  "metadata": [
-    "canonical",
-    "romanization"
   ],
   "morphology": [
     "class"
@@ -94,10 +151,16 @@
     "alternative",
     "romanization",
     "hiragana",
-    "katakana"
+    "katakana",
+    "kanji"
   ],
   "yet-to-sort": [
     "lative",
+    "terminative",
+    "elative",
+    "allative",
+    "causal-final",
+    "terminative",
     "prolative",
     "situative",
     "superessive",
@@ -117,14 +180,11 @@
     "causative",
     "possessive",
     "comitative",
-    "plural",
     "partitive",
-    "accusative",
     "lative",
     "translative",
     "temporal",
-    "distributive",
-    "alternative"
+    "distributive"
   ]
 }
 

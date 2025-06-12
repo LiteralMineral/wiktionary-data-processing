@@ -57,21 +57,21 @@ InOut.init(spark)
 # lang = "Japanese"
 # lang = "Arabic"
 langs = [
-    "Arabic",
-    "Catalan",
-    "Chinese",
-    "Finnish",
-    "French",
-    "German",
-    "Japanese",
-    "Korean",
-    "Latin",
-    "Mandarin",
-    "Polish",
-    "Portuguese",
+    # "Arabic",
+    # "Catalan",
+    # "Chinese",
+    # "Finnish",
+    # "French",
+    # "German",
+    # "Japanese",
+    # "Korean",
+    # "Latin",
+    # "Mandarin",
+    # "Polish",
+    # "Portuguese",
     "Russian",
-    "Spanish",
-    "Swedish"
+    # "Spanish",
+    # "Swedish"
 ]
 
 # for lang in langs:
@@ -124,60 +124,41 @@ def testing_func(lang:str, filename):
 #                       "All")
 
 
+for lang in langs:
+    # load the word_forms data
 
-all_form_tags = InOut.load_parquet("All", "form_tags")
-all_form_tags = all_form_tags.groupBy("form_tags").pivot("lang").agg(funcs.collect_set('pos'))
-# for lang in langs:
-#     lang_form_tags = all_form_tags.select(["form_tags", lang]).filter(funcs.isnotnull(lang))
-#     lang_form_tags.show(40, truncate=100)
+    # select the tags for each tag category column....
 
+    # save the dataset.
 
-array_cols = utils.select_array_cols(all_form_tags)
+    pass
 
-all_langs = utils.reduce_columns(all_form_tags, "all_langs",
-                                     array_cols, funcs.array_union)
-
-all_langs = all_langs.withColumn("array_size", funcs.array_size("all_langs"))\
-    .sort("array_size", ascending=False)\
-    .drop("array_size")
-
-all_langs = all_langs.withColumn("all_langs", funcs.concat_ws("\n", "all_langs"))
-
-all_langs = all_langs.select("form_tags", "all_langs")
-# all
-InOut.write_to_single_csv(all_langs, "All", "form_tags_by_pos")
-
-# all_langs = all_langs.select("form_tags", "all_langs").show(100, truncate=50)
-
-# all_form_tags.show()
-# col_map = utils.make_map_dict(array_cols, lambda x: funcs)
-
-
-# all_form_tags = all_form_tags.withColumns(utils.concat_array_map(all_form_tags, "\n"))
-# all_form_tags.show(100, truncate=200)
-
-# for lang in langs:
-#     lang_form_tags = all_form_tags.select(["form_tags", lang])\
-#         .filter((funcs.isnotnull(lang)) & (funcs.col(lang) != ""))\
-#         .sort("form_tags")
-#     InOut.save_parquet(lang_form_tags, lang, "form_tags_by_pos")
-    # InOut.write_to_single_csv(lang_form_tags, lang, "form_tags_by_pos")
-
-
-
-    # lang_form_tags.show(100, truncate=50)
-# for lang in langs:
-#     inflections.sample_word_forms(lang, min_samples=100)
-
-
-
-
-
-
-
-# sample = inflections.sample_word_forms("Russian", min_samples=100)
-
-
+# data = InOut.load_parquet("Russian", "word_forms")
+# data = InOut.load_parquet("Japanese", "word_forms")
+# data = InOut.load_parquet("Chinese", "word_forms")
+# data = InOut.load_parquet("Mandarin", "word_forms")
+# data = InOut.load_parquet("Korean", "word_forms")
+data = InOut.load_parquet("Finnish", "word_forms")
+# data = InOut.load_parquet("German", "word_forms")
+# data.show(500)
+sorted_tags = inflections.sort_by_grammatical_feature(data)
+# sorted_tags = sorted_tags.filter(sorted_tags.pos == "verb")
+# sorted_tags = sorted_tags.filter(funcs.array_size("ruby") > 0 )
+# sorted_tags = sorted_tags.filter(funcs.array_size("gender") > 1 )
+# sorted_tags = sorted_tags.filter(funcs.array_size("usage_notes") > 0 )
+sorted_tags = sorted_tags.filter(funcs.array_size("case") > 0 )
+# sorted_tags = sorted_tags.filter()
+# sorted_tags = sorted_tags.filter(((funcs.array_size("tags") > 0)
+                                  # & (sorted_tags.pos != "romanization")
+                                  # & (sorted_tags.pos != "character")
+                                  # & (sorted_tags.pos != "name")
+                                  # & (sorted_tags.pos != "symbol")
+                                  # ))
+# sorted_tags = sorted_tags.filter(funcs.array_contains(????, "colloquial"))
+# sorted_tags = sorted_tags.filter(funcs.array_size("") > 0 )
+sorted_tags.show(500, truncate="100")
+# sorted_tags.show(500)
+# sorted_tags.printSchema()
 
 
 spark.stop()

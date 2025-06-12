@@ -1,0 +1,174 @@
+{
+  "animacy" : [
+    "animate",
+    "inanimate"
+  ],
+  "case" : [
+    "abessive", "ablative", "absolutive", "accusative", "adessive", "adpositional", "adverbial", "aequalis", "allative", "antessive", "apudessive", "associative", "aversive",
+    "benefactive",
+    "caritive", "casus-rectus", "causal-final", "causative", "comitative", "comparative", "construct-state",
+    "dative", "delative", "direct", "distributive", "distributive-temporal",
+    "egressive", "elative", "equative", "ergative", "ergative-genitive", "essive", "essive-formal", "essive-modal", "exessive",
+    "final", "formative",
+    "genitive",
+    "illative", "inelative", "inessive", "instructive", "instrumental", "instrumental-comitative", "intransitive", "intrative",
+    "lative", "locative",
+    "malefactive", "modal", "multiplicative",
+    "nominative", "nota-accusativi",
+    "oblique", "oppositive", "orientative", "ornative",
+    "partitive", "pegative", "perlative", "pertingent", "possessive", "postelative", "postessive", "prepositional", "privative", "prolative",
+    "respective", "revertive",
+    "semblative", "situative", "sociative", "subessive", "sublative", "superessive", "superlative",
+    "temporal", "terminative", "translative",
+    "verbal", "vocative"
+  ],
+  "countability" : [
+    "countable",
+    "uncountable"
+  ],
+  "definiteness" : [
+    "definite",
+    "indefinite"
+  ],
+  "gender" : ["common",
+    "feminine",
+    "masculine",
+    "neuter"
+  ],
+  "number" : [
+    "singular",
+    "plural",
+    "collective",
+    "dual",
+    "trial",
+    "quadral","quintal",
+    "paucal"
+  ],
+  "specificity" : [
+    "non-specific",
+    "specific"
+  ],
+  "clusivity" : [
+    "exclusive",
+    "inclusive"
+  ],
+  "person" : [
+    "first-person",
+    "second-person",
+    "third-person"
+  ],
+  "tense_aspect_mood" : [
+    "conditional",
+    "future",
+    "hypothetical",
+    "imperative", "imperfect", "imperfective", "indicative", "inferential", "interrogative", "irrealis",
+    "jussive",
+    "non-past",
+    "optative",
+    "past", "perfect", "perfective", "pluperfect", "potential", "present", "presumptive", "progressive",
+    "realis",
+    "subjunctive"
+  ],
+  "voice" : [
+    "active",
+    "passive"
+  ],
+  "affect" : [
+    "adversative","approbative","augmentative",
+    "diminutive",
+    "honorific",
+    "laudative",
+    "pejorative"
+  ],
+  "degree" : [
+    "comparative",
+    "superlative"
+  ],
+  "formality" : [
+    "formal",
+    "informal"
+  ],
+  "politeness" : [
+    "non-polite",
+    "polite"
+  ],
+  "polarity" : [
+    "affirmative",
+    "negative"
+  ],
+  "reciprocity" : [
+    "reflexive"
+  ],
+  "class" : [
+    "diptote",
+    "indeclinable", "invariable",
+    "triptote"
+  ],
+  "aspect" : [
+    "imperfect","imperfective",
+    "perfect","perfective"
+  ],
+  "inflection_variation" : [
+    "broken-form",
+    "diptote",
+    "short-form","sound-form",
+    "triptote"
+  ],
+  "morphological_derivations" : [
+    "adjective", "adverbial",
+    "diminutive",
+    "noun-from-adj", "noun-from-verb",
+    "participle",
+    "relational",
+    "verb"
+  ],
+  "usage_notes" : [
+    "archaic",
+    "colloquial",
+    "dated",
+    "literally",
+    "obsolete",
+    "rare"
+  ],
+  "variation" : [
+    "alternative",
+    "diminutive",
+    "irregular",
+    "nonstandard",
+    "rare", "relational"
+  ],
+  "social_connotation" : [
+    "archaic",
+    "colloquial",
+    "dated",
+    "formal",
+    "informal",
+    "obsolete",
+    "polite"
+  ],
+  "region" : [
+    "Moscow",
+    "Portugal"
+  ],
+  "kaikki_processing_notes" : [
+    "error-unknown-tag","error-unrecognized-form",
+    "inflection-template",
+    "table-tags"
+  ],
+  "writing-system" : [
+    "Pinyin",
+    "Simplified Chinese",
+    "Traditional Chinese",
+    "Wade-Giles",
+    "Yale",
+    "alternative",
+    "bopomofo",
+    "hangeul", "hanja", "hiragana",
+    "kanji", "katakana",
+    "romanization"
+  ],
+  "yet-to-sort" : [
+    "enclitic",
+    "indeclinable","invariable"
+  ]
+}

@@ -134,7 +134,7 @@ def concat_array_map(data: DataFrame, sep = "_") -> dict:
 #        string: name of column to filter
 #        dictionary: with keywords of columns and values of filtering tag lists
 # returns: dataframe with columns added, as described by the dictionary.
-def sort_tags_column(data: DataFrame, column_name, filter_tags: typing.Dict):
+def filter_tag_column(data: DataFrame, column_name, filter_tags: typing.Dict):
     return reduce(
         lambda acc_df, cat_name: acc_df.withColumn(
             cat_name,  # given the category name

@@ -1,0 +1,87 @@
+{
+  "animacy" : ["animate", "inanimate"],
+  "case" : [
+    "nominative", "genitive", "dative", "accusative", "instrumental", "ablative", "lative",
+    "terminative", "elative", "allative", "causal-final", "terminative", "prolative", "situative",
+    "superessive", "delative", "abessive", "allative", "adessive", "inessive", "essive", "prepositional",
+    "oppositive", "elative", "instructive", "illative", "multiplicative", "sublative", "causative",
+    "possessive", "comitative", "partitive", "lative", "translative", "temporal", "distributive", "abessive",
+    "ablative","absolutive","accusative","adessive","adpositional",
+    "adverbial","allative","antessive","apudessive","associative","aversive",
+    "benefactive","causative","comitative","comparative","construct state","dative",
+    "delative","direct","distributive","distributive-temporal","egressive","elative",
+    "equative","ergative","ergative-genitive","essive","essive-modal","formative",
+    "exessive","final","genitive","illative","inelative","inessive",
+    "instructive","instrumental","instrumental-comitative","intransitive","intrative","lative",
+    "locative","modal","multiplicative","nominative","nota accusativi","oblique",
+    "orientative","ornative","partitive","pegative","perlative","pertingent",
+    "possessive","postelative","postessive","prolative","respective","revertive",
+    "semblative","sociative","subessive","sublative","superessive","superlative",
+    "temporal","terminative","translative","verbal","vocative"
+  ],
+  "classifier" : [],
+  "construct-state" : [],
+  "countability" : ["countable", "uncountable"],
+  "definiteness" : ["definite", "indefinite"],
+  "gender" : ["masculine", "feminine", "neuter", "common"],
+  "genitive-construction" : [],
+  "noun-class" : [],
+  "number" : [
+    "singular", "plural", "collective", "dual",
+    "trial","quadral","quintal","paucal"
+  ],
+  "specificity" : ["specific", "non-specific"],
+  "universal-grinder" : [],
+
+
+  "associated-motion" : [],
+  "clusivity" : ["inclusive", "exclusive"],
+  "conjugation" : [],
+  "evidentiality" : [],
+  "modality" : [],
+  "person" : ["first-person", "second-person", "third-person"],
+  "telicity" : [],
+  "mirativity" : [],
+  "tense-aspect-mood" : [
+    "past", "non-past", "present", "future", "imperative", "perfect", "pluperfect", "perfective",
+    "progressive", "imperfect", "imperfective", "subjunctive", "jussive", "indicative",
+    "conditional", "optative", "imperative", "potential", "presumptive", "hypothetical",
+    "inferential", "interrogative", "irrealis", "realis"],
+  "voice" : ["active", "passive"],
+
+
+  "affect" : ["diminutive", "augmentative", "pejorative", "laudative", "approbative", "adversative", "honorific"],
+  "boundedness" : [],
+  "degree" : ["comparative", "superlative"],
+  "egophoricity" : [],
+  "politeness" : ["formal", "informal", "polite"],
+  "polarity" : ["negative", "affirmative"],
+  "reciprocity" : ["reflexive"],
+
+  "transitivity" : [],
+  "causativity" : [],
+  "valency" : [],
+
+  "possession" : [],
+
+
+  "subject": ["first-person", "second-person", "third-person" ],
+  "aspect": ["perfective", "imperfective", "perfect", "imperfect" ],
+  "different_forms" : ["adjective", "diminutive", "relational", "short-form", "participle", "adverbial", "noun-from-verb", "adjective" ],
+  "derived-form" : ["adverbial", "noun-from-verb", "adjective", "verb" ],
+  "usage_notes" : ["rare", "literally", "dated", "obsolete", "archaic", "colloquial" ],
+  "variation" : ["rare", "irregular", "nonstandard", "alternative", "diminutive", "relational" ],
+  "social-connotation": ["archaic", "dated", "obsolete", "colloquial", "polite", "formal", "informal" ],
+  "region" : ["Moscow", "Portugal"],
+  "kaikki_processing_notes": ["table-tags", "inflection-template", "error-unknown-tag", "error-unrecognized-form" ],
+  "morphology": ["class" ],
+  "writing-system": [
+    "hanja", "hangeul", "alternative", "romanization", "hiragana",
+    "katakana", "kanji", "traditional", "simplified", "bopomofo",
+    "Wade-Giles", "Pinyin"
+  ],
+
+  "yet-to-sort": ["lative", "terminative", "elative", "allative", "causal-final", "terminative", "prolative", "situative", "superessive", "delative", "abessive", "allative", "adessive", "inessive", "essive", "prepositional", "oppositive", "elative", "instructive", "illative", "multiplicative", "sublative", "causative", "possessive", "comitative", "partitive", "lative", "translative", "temporal", "distributive" ]
+}
+
+

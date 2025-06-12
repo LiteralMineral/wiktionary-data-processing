@@ -1,0 +1,25 @@
+Tag,Meaning,Potential categorization
+abstract-noun,Found in glossary. Nouns that refer to intangible things.,Tangibility? Concreteness? I'm unsure it these would be useful categories
+augmentative,found in glossary. Denoting seniority�,Connotation? Alters the connotation? Whether I make another category probably depends on if this is something found in other languages...�
+impersonal,"Seems to be an error in parsing the data. Used for ""????"" and nothing else, and the form is ""word"".","Possibly notes on how a word is used, what types of sentences they are used in."
+irregular,Self-explanatory,regularity/variation. Seems more useful as a way to filter out alternative word-forms or detect when a word has irregularly inflected but standard forms.
+indeclinable,"Found in glossary, but self-explanatory.",�inflection notes? Inflection class?
+dialectal,In glossary,�usage? Dialect? locale?
+count-form,Does not show up in the glossary. They seem to be units,Unsure if these warrant a category. They might warrant renaming.
+class,"These seem to mostly be labels that describe what inflection class a word is part of. The ""form"" isn't really a form, but the inflection class�","I may be able to throw this data out, since many words have their class tagged in other sections of the dataset. If not, I can use it to detect words' classes."
+attributive,Found in glossary. Seems to have to do with nouns that modify other nouns... But there are also adjectives listed.,�It seems it's only relevant for one word in Russian: ???. I might just disregard it when it comes to Russian.
+adverbial,Self-explanatory for Russian.,�Should there be a category that denotes whether the word-form functions like a different part of speech? What would that category be called? Are there other uses of this tag in other language datasets.
+abstract-verb,Surprisingly doesn't show up in the Russian dataset. The same concept might be tagged with something else. I expect it to show up for other Slavic languages.,�Tangibility? concreteness?
+no-perfect,Seems to be an error in how the data is parsed,"This tag may show up in other columns of data besides the ""forms"" column."
+nonstandard,self-explanatory,"�Something about frequency of usage or dialect/locale, perhaps"
+noun-from-verb,self-explanatory.,maybe a category about derivation or morphology.
+parenthetic,"Seems like an error in parsing the data. It only shows up for ????????, where the form is ""word"".","If it shows up in other datasets, I will analyze it."
+paucal,Some of these words are ones that have irregular plural forms....,�is it related to morphology?
+pejorative,Self-explanatory. In glossary.,"Would it make sense to classify this as connotation? For Russian, this seems to be included in the dictionary entry header. I think it would be worth keeping such forms, since many of them don't appear as their own Wiktionary entry."
+partitive,In glossary. It makes sense. It seems to be treated as a case in Russian for certain words,"I'll add it to the ""case"" property"
+plural-of,"Notes when a word is the plural form of a different word. The only word tagged with this seems to be ""???????"" under the entry ""????""","I will leave it for now but will eventually use it to determine relationships to other word entries.Might go in a category ""relationship to other words"""
+poetic,Seems to be commentary on how a variation in inflection might influence connotation in poetry.,"Very much unsure how to categorize this. The examples I looked at were ""???"" and ""??????"". In Russian this seems related to animacy."
+proscribed,In glossary. Recommended against.,Something related to a notion of standardization. Dialects? Usage notes?
+relational,"Describes that it is an adjectival form of a word meaning ""relating to""",�probably would classify it as describing morphology or describing a relationship to another word...
+short-form,Self-explanatory...,"I expect this to show up in some other languages, particularly Slavic languages. But I'm unsure if it reflects a feature of words across many other languages. Perhaps simply categorize it as a variation or shortening?"
+with-subjunctive,Seems to have been captured in error.,"Either I'll do nothing or I'll put it with ""usage_notes"" or something similar."

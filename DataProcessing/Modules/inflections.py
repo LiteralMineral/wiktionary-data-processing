@@ -58,9 +58,8 @@ def collect_inflection_tags(data: DataFrame, group: str = "lang", explode_tags=F
     return grouped_by
 
 
-def analyze_lang_forms(lang: str,
-                       spark: SparkSession) -> DataFrame:
-    data = InOut.load_parquet("lang", "has_id_column", spark)
+def analyze_lang_forms(lang: str) -> DataFrame:
+    data = InOut.load_parquet("lang", "has_id_column")
     data = collect_inflection_tags(data, "lang")
     return data
 
@@ -115,9 +114,17 @@ def extract_inflection_tags(data: DataFrame):
 
 
 def sort_inflection_tags(data: DataFrame, category_tags: typing.Dict):
-    return utils.sort_tags_column(data, "inflection_tags", category_tags)
+    return utils.filter_tag_column(data, "tags", category_tags)
 
-
+def sort_by_grammatical_feature(data: DataFrame):
+    # load grammatical_features.json
+    with open("DataProcessing/DataFilters/grammatical_features.json", 'r') as f:
+        json_string = f.read()
+        grammatical_features = json.loads(json_string)
+        # print(grammatical_features)
+        return sort_inflection_tags(data, grammatical_features)
+    #
+    # pass
 
 
 def sample_word_forms(lang: str, min_samples = 30):
