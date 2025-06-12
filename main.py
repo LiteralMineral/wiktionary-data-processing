@@ -1,4 +1,5 @@
 # other stuff
+import json
 from functools import reduce
 import pyspark.sql.functions as funcs
 import pyarrow
@@ -57,21 +58,21 @@ InOut.init(spark)
 # lang = "Japanese"
 # lang = "Arabic"
 langs = [
-    # "Arabic",
-    # "Catalan",
-    # "Chinese",
-    # "Finnish",
-    # "French",
-    # "German",
-    # "Japanese",
-    # "Korean",
-    # "Latin",
-    # "Mandarin",
-    # "Polish",
-    # "Portuguese",
+    "Arabic",
+    "Catalan",
+    "Chinese",
+    "Finnish",
+    "French",
+    "German",
+    "Japanese",
+    "Korean",
+    "Latin",
+    "Mandarin",
+    "Polish",
+    "Portuguese",
     "Russian",
-    # "Spanish",
-    # "Swedish"
+    "Spanish",
+    "Swedish"
 ]
 
 # for lang in langs:
@@ -124,7 +125,7 @@ def testing_func(lang:str, filename):
 #                       "All")
 
 
-for lang in langs:
+for l in langs:
     # load the word_forms data
 
     # select the tags for each tag category column....
@@ -133,20 +134,32 @@ for lang in langs:
 
     pass
 
+
+with open("DataProcessing/DataFilters/grammatical_features.json") as fi:
+    grammatical_features = dict(json.loads(fi.read()))
+    # print(grammatical_features)
+    print(list(grammatical_features.keys()))
+
+for la in langs:
+    pos_dict = dict()
+    for pos in get_pos(la): pos_dict[pos] = list(grammatical_features.keys())
+    with open(f"DataProcessing/DataFilters/{la}_pos_grammatical_features.json", "w") as file:
+        file.write(json.dumps(pos_dict, indent=1))
+
 # data = InOut.load_parquet("Russian", "word_forms")
 # data = InOut.load_parquet("Japanese", "word_forms")
 # data = InOut.load_parquet("Chinese", "word_forms")
 # data = InOut.load_parquet("Mandarin", "word_forms")
 # data = InOut.load_parquet("Korean", "word_forms")
-data = InOut.load_parquet("Finnish", "word_forms")
+# data = InOut.load_parquet("Finnish", "word_forms")
 # data = InOut.load_parquet("German", "word_forms")
 # data.show(500)
-sorted_tags = inflections.sort_by_grammatical_feature(data)
+# sorted_tags = inflections.sort_by_grammatical_feature(data)
 # sorted_tags = sorted_tags.filter(sorted_tags.pos == "verb")
 # sorted_tags = sorted_tags.filter(funcs.array_size("ruby") > 0 )
 # sorted_tags = sorted_tags.filter(funcs.array_size("gender") > 1 )
 # sorted_tags = sorted_tags.filter(funcs.array_size("usage_notes") > 0 )
-sorted_tags = sorted_tags.filter(funcs.array_size("case") > 0 )
+# sorted_tags = sorted_tags.filter(funcs.array_size("case") > 0 )
 # sorted_tags = sorted_tags.filter()
 # sorted_tags = sorted_tags.filter(((funcs.array_size("tags") > 0)
                                   # & (sorted_tags.pos != "romanization")
@@ -156,9 +169,11 @@ sorted_tags = sorted_tags.filter(funcs.array_size("case") > 0 )
                                   # ))
 # sorted_tags = sorted_tags.filter(funcs.array_contains(????, "colloquial"))
 # sorted_tags = sorted_tags.filter(funcs.array_size("") > 0 )
-sorted_tags.show(500, truncate="100")
+# sorted_tags.show(500, truncate="100")
 # sorted_tags.show(500)
 # sorted_tags.printSchema()
+
+
 
 
 spark.stop()

@@ -9,6 +9,7 @@ global spark_info
 global dir_info
 global server_connection
 global db_dict
+global filters
 
 def init():
     global config
@@ -52,7 +53,8 @@ def init():
     # basically, variables for forming filepaths.
     dir_info = {
         "data_proc": dir_dict["DATA_PROC_DIR"],
-        "data_end": dir_dict["END_DATA_DIR"]
+        "data_end": dir_dict["END_DATA_DIR"],
+        "filters": dir_dict["FILTERS"]
     }
 
     # TODO: rewrite this so it works, lol

@@ -15,6 +15,8 @@ Contains:
         * Writes the dataset to a single csv
 """
 import settings
+from settings import dir_info
+
 settings.init()
 
 import shutil
@@ -104,4 +106,10 @@ def write_to_single_json(data: DataFrame, lang, foldername):
                 "json", has_header=False)
 
     pass
+
+def get_filter(filename):
+    """Retrieve the json objects that define the columns related to cross-linguistic
+     grammatical features and the json objects that define the  """
+    with open(f"{dir_info['filters']}/{filename}.json") as file:
+        dict(json.loads(fi.read()))
 
